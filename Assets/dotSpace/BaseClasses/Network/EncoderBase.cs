@@ -21,8 +21,6 @@ namespace dotSpace.BaseClasses.Network
         {
             var v = JsonConvert.DeserializeObject<T>(json);
 
-            Debug.Log(json + " | " + typeof(T) + " | " + v.GetType());
-
             return v;
         }
 

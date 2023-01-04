@@ -98,9 +98,9 @@ public class NetworkServer
         {
             if (id != playerId)
             {
-                (int, Vector3) data = ((int, Vector3))packet.data;
+                (int,float,float,float) data = ((int, float, float, float))packet.data;
 
-                _currentSpace.Put(id, packet.type.ToString(), data.Item1, data.Item2.x, data.Item2.y, data.Item2.z);
+                _currentSpace.Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3, data.Item4);
             }
         }
     }
@@ -132,6 +132,8 @@ public class NetworkServer
                 Debug.Log("Got Inst update");
                 GameObject gb = GBHelper.Instantiate(prefabs[(string)tuple[2]]);
 
+                gb.GetComponent<NetworkTransform>().id = (int)tuple[4];
+
                 networkObjects.Add((int)tuple[4], gb.GetComponent<NetworkTransform>());
 
                 if((string)tuple[3] == playerId)
@@ -148,21 +150,29 @@ public class NetworkServer
     {
         while(true)
         {
-            ITuple tuple = _currentSpace.GetP("Server", typeof(string));
+            ITuple tuple = _currentSpace.GetP("Server", typeof(string), typeof(string));
 
-            if (tuple != null  && (string)tuple[1] == "Join")
+            if (tuple != null && (string)tuple[1] == "Join")
             {
                 Debug.Log("Player " + tuple[2] + " Joined");
 
                 _playerIds.Add((string)tuple[2]);
             }
 
-            tuple = _currentSpace.GetP("Server", typeof(string),typeof(string),typeof(string));
+            tuple = _currentSpace.GetP("Server", typeof(string), typeof(string), typeof(string));
 
             if (tuple != null && (string)tuple[1] == "Instantiate")
             {
                 Debug.Log("Got server inst update");
-                BroadcastInstantiateUpdate(new Packet(PacketType.Instantiate,"Server","Player",((string)tuple[2], (string)tuple[3], _currentId++)));
+                BroadcastInstantiateUpdate(new Packet(PacketType.Instantiate, "Server", "Player", ((string)tuple[2], (string)tuple[3], _currentId++)));
+            }
+
+            tuple = _currentSpace.GetP("Server", typeof(string), typeof(string), typeof(string));
+
+            if (tuple != null && (string)tuple[1] == "Movement")
+            {
+                Debug.Log("Got server movement update");
+                BroadcastMovementUpdate(new Packet(PacketType.Instantiate, "Server", "Player", ((int)tuple[2], (float)tuple[3], (float)tuple[4], (float)tuple[5])));
             }
         }
     }

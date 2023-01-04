@@ -25,7 +25,7 @@ public class NetworkTransform : MonoBehaviour
     {
         if (!isOwner) return;
         t += Time.deltaTime;
-        if (NetworkServer.masterClient && t >= 1f/updateRate)
+        if (t >= 1f/updateRate)
         {
             t = 0;
             NetworkServer.MovementUpdate(new Packet(PacketType.Movement, NetworkServer.playerId, "Server", (id, transform.position)));
