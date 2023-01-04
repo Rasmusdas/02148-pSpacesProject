@@ -96,12 +96,9 @@ public class NetworkServer
     {
         foreach (string id in _playerIds)
         {
-            if (id != playerId)
-            {
-                (int,float,float,float) data = ((int, float, float, float))packet.data;
+            (int, float, float, float) data = ((int, float, float, float))packet.data;
 
-                _currentSpace.Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3, data.Item4);
-            }
+            _currentSpace.Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3, data.Item4);
         }
     }
 
@@ -167,12 +164,12 @@ public class NetworkServer
                 BroadcastInstantiateUpdate(new Packet(PacketType.Instantiate, "Server", "Player", ((string)tuple[2], (string)tuple[3], _currentId++)));
             }
 
-            tuple = _currentSpace.GetP("Server", typeof(string), typeof(string), typeof(string));
+            tuple = _currentSpace.GetP("Server", typeof(string), typeof(int), typeof(float), typeof(float), typeof(float));
 
             if (tuple != null && (string)tuple[1] == "Movement")
             {
                 Debug.Log("Got server movement update");
-                BroadcastMovementUpdate(new Packet(PacketType.Instantiate, "Server", "Player", ((int)tuple[2], (float)tuple[3], (float)tuple[4], (float)tuple[5])));
+                BroadcastMovementUpdate(new Packet(PacketType.Movement, "Server", "Player", ((int)tuple[2], (float)tuple[3], (float)tuple[4], (float)tuple[5])));
             }
         }
     }

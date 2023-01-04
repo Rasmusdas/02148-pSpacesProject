@@ -28,7 +28,7 @@ public class NetworkTransform : MonoBehaviour
         if (t >= 1f/updateRate)
         {
             t = 0;
-            NetworkServer.MovementUpdate(new Packet(PacketType.Movement, NetworkServer.playerId, "Server", (id, transform.position)));
+            NetworkServer.MovementUpdate(new Packet(PacketType.Movement, NetworkServer.playerId, "Server", (id, transform.position + new Vector3(Input.GetAxis("Horizontal"),0,0))));
         }
     }
 
