@@ -5,6 +5,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using UnityEngine;
 
 namespace dotSpace.Objects.Network.Gates
 {
@@ -33,8 +34,8 @@ namespace dotSpace.Objects.Network.Gates
         public TcpGate(IEncoder encoder, ConnectionString connectionstring) : base(encoder, connectionstring)
         {
             this.backlog = 50;
-            this.ipAddress = IPAddress.Parse(connectionstring.Host);
-            this.listener = new TcpListener(ipAddress, this.ConnectionString.Port);
+            this.ipAddress = IPAddress.Any;
+            this.listener = new TcpListener(IPAddress.Any, this.ConnectionString.Port);
         }
 
         #endregion
@@ -72,8 +73,8 @@ namespace dotSpace.Objects.Network.Gates
         private void Listen()
         {
             this.listener.Start(this.backlog);
-            Console.WriteLine("Current endpoint: {0}:{1}", this.ipAddress.ToString(), this.ConnectionString.Port);
-            Console.WriteLine("Begin listening...");
+            Debug.Log(string.Format("Current endpoint: {0}:{1}", this.ipAddress.ToString(), this.ConnectionString.Port));
+            Debug.Log("Begin listening...");
             try
             {
                 while (this.listening)

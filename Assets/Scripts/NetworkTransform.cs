@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using UnityEngine;
 
 public class NetworkTransform : MonoBehaviour
@@ -12,23 +13,17 @@ public class NetworkTransform : MonoBehaviour
     public float t;
     public bool register;
 
+    public bool isOwner;
+
     private void Start()
     {
-        if (register)
-        {
-            Debug.Log("Starting Server");
-            NetworkServer.StartServer(new ServerInfo("tcp","127.0.0.1",1234,"test","CONN"));
-            NetworkServer.Instantiate(this);
-        }
-        else
-        {
-            Debug.Log("Joining Server");
-            NetworkServer.JoinServer(new ServerInfo("tcp", "127.0.0.1", 1234, "test", "CONN"));
-        }
+        if (!isOwner) return;
+
     }
 
     private void Update()
     {
+        if (!isOwner) return;
         t += Time.deltaTime;
         if (NetworkServer.masterClient && t >= 1f/updateRate)
         {

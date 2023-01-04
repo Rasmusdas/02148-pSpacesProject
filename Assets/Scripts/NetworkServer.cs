@@ -19,6 +19,8 @@ public class NetworkServer
     private static int _currentId;
     private static Dictionary<int,NetworkTransform> networkObjects = new();
 
+    private static Dictionary<string, GameObject> prefabs = new();
+
     public static void StartServer(ServerInfo info)
     {
         masterClient = true;
@@ -26,6 +28,8 @@ public class NetworkServer
         _repository.AddGate(string.Format("{0}://{1}:{2}?{3}", info.protocol, info.ip, info.port, info.connectionType));
         _currentSpace = new SequentialSpace();
         _repository.AddSpace(info.space, _currentSpace);
+
+        
         Debug.Log("Server Started: " + info);
 
         playerId = Guid.NewGuid().ToString();
@@ -36,65 +40,107 @@ public class NetworkServer
 
         serverThread.Start();
 
-        Thread clientThread = new Thread(new ThreadStart(() => HandleUpdates()));
+        LoadResources();
 
-        clientThread.Start();
+        GBHelper.Start(HandleUpdates());
+
+        
     }
 
     public static void JoinServer(ServerInfo info)
     {
         masterClient = false;
 
-        _currentSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port,info.space, info.connectionType));
-
-        Debug.Log("Connected to server: " + info);
+        _currentSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, info.space, info.connectionType));
 
         playerId = Guid.NewGuid().ToString();
 
         _playerIds.Add(playerId);
 
-        _currentSpace.Put("Server",playerId);
+        _currentSpace.Put("Server", "Join", playerId);
 
-        Thread thread = new Thread(new ThreadStart(() => HandleUpdates()));
+        Debug.Log("Connected to server: " + info);
 
-        thread.Start();
+        LoadResources();
+
+        GBHelper.Start(HandleUpdates());
+
+        
     }
 
-    public static void Instantiate(NetworkTransform obj)
+    private static void LoadResources()
     {
-        networkObjects.Add(_currentId, obj);
-        _currentId++;
+        var objs = Resources.LoadAll("NetworkPrefabs",typeof(GameObject));
+
+        foreach(var v in objs)
+        {
+            prefabs.Add(v.name, (GameObject)v);
+        }
+    }
+
+    public static void Instantiate(string objName)
+    {
+        if (!prefabs.ContainsKey(objName)) throw new ArgumentException("Object does not exist in prefabs");
+
+        _currentSpace.Put("Server","Instantiate","Player",playerId);
     }
 
     public static void MovementUpdate(Packet packet)
     {
-        _currentSpace.Put(packet.target, packet.type.ToString());
+        (int, Vector3) data = ((int, Vector3))packet.data;
+
+        _currentSpace.Put(packet.target, packet.type.ToString(), data.Item1, data.Item2.x, data.Item2.y, data.Item2.z);
     }
 
     private static void BroadcastMovementUpdate(Packet packet)
     {
-        foreach(string id in _playerIds)
+        foreach (string id in _playerIds)
         {
-            if(id != playerId)
+            if (id != playerId)
             {
-                Debug.Log("Adding packet " + string.Format("{0},{1},{2}", id, packet.type.ToString(), packet.data));
-                _currentSpace.Put(id,packet.type.ToString());
+                (int, Vector3) data = ((int, Vector3))packet.data;
+
+                _currentSpace.Put(id, packet.type.ToString(), data.Item1, data.Item2.x, data.Item2.y, data.Item2.z);
             }
         }
     }
 
-    private static void HandleUpdates()
+    private static void BroadcastInstantiateUpdate(Packet packet)
+    {
+        foreach (string id in _playerIds)
+        {
+            (string, string, int) data = ((string, string, int))packet.data;
+            _currentSpace.Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3);
+        }
+    }
+
+    private static IEnumerator HandleUpdates()
     {
         while(true)
         {
-            ITuple tuple = _currentSpace.Get(playerId, typeof(string));
-
-            if ((string)tuple[1] == "Movement")
+            ITuple tuple = _currentSpace.GetP(playerId, typeof(string), typeof(int), typeof(float), typeof(float), typeof(float));
+            if (tuple != null && (string)tuple[1] == "Movement")
             {
-                Debug.Log("Got update packet");
-                //var data = ((int, Vector3))tuple[2];
-                //networkObjects[data.Item1].UpdatePosition(data.Item2);
+                Debug.Log("Got movement update");
+                networkObjects[(int)tuple[2]].UpdatePosition(new Vector3((float)tuple[3], (float)tuple[4], (float)tuple[5]));
             }
+
+            tuple = _currentSpace.GetP(playerId, typeof(string), typeof(string), typeof(string), typeof(int));
+
+            if (tuple != null && (string)tuple[1] == "Instantiate")
+            {
+                Debug.Log("Got Inst update");
+                GameObject gb = GBHelper.Instantiate(prefabs[(string)tuple[2]]);
+
+                networkObjects.Add((int)tuple[4], gb.GetComponent<NetworkTransform>());
+
+                if((string)tuple[3] == playerId)
+                {
+                    gb.GetComponent<NetworkTransform>().isOwner = true;
+                }
+            }
+
+            yield return new WaitForEndOfFrame();
         }
     }
 
@@ -102,22 +148,21 @@ public class NetworkServer
     {
         while(true)
         {
-            ITuple tuple = _currentSpace.Get("Server", typeof(string));
-            Debug.Log("Got Server Packet");
+            ITuple tuple = _currentSpace.GetP("Server", typeof(string));
 
-            if ((string)tuple[1] == "Movement")
+            if (tuple != null  && (string)tuple[1] == "Join")
             {
-                Debug.Log("Got movement packet");
+                Debug.Log("Player " + tuple[2] + " Joined");
 
-                BroadcastMovementUpdate(new Packet(PacketType.Movement, playerId, "Player", null));
-                //var data = ((int, Vector3))tuple[2];
-                //networkObjects[data.Item1].UpdatePosition(data.Item2);
+                _playerIds.Add((string)tuple[2]);
             }
-            else
-            {
-                Debug.Log("Player " + tuple[1] + " Joined");
 
-                _playerIds.Add((string)tuple[1]);
+            tuple = _currentSpace.GetP("Server", typeof(string),typeof(string),typeof(string));
+
+            if (tuple != null && (string)tuple[1] == "Instantiate")
+            {
+                Debug.Log("Got server inst update");
+                BroadcastInstantiateUpdate(new Packet(PacketType.Instantiate,"Server","Player",((string)tuple[2], (string)tuple[3], _currentId++)));
             }
         }
     }
@@ -164,5 +209,5 @@ public struct Packet
 
 public enum PacketType
 {
-    Movement
+    Movement,Instantiate
 }
