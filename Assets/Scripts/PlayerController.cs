@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour
         GetInputs();
         Move();
 
-        if (Input.GetKeyDown(fireKey))
+        if (Input.GetKey(fireKey))
         {
             muzzleflashVFX.Play();
             bulletVFX.Play();
