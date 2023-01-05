@@ -27,7 +27,6 @@ public class NetworkTransform : MonoBehaviour
     {
         if (!isOwner) return;
         t += Time.deltaTime;
-        Debug.Log(Vector3.Distance(transform.position, prevPos));
         if (t >= 1f/updateRate && Vector3.Distance(transform.position,prevPos) > moveDelta)
         {
             t = 0;
