@@ -12,22 +12,25 @@ public class NetworkTransform : MonoBehaviour
     public int id;
     public float t;
     public bool register;
-
+    public float moveDelta = 0.3f;
     public bool isOwner;
+
+    Vector3 prevPos;
 
     private void Start()
     {
         if (!isOwner) return;
-
+        prevPos = transform.position;
     }
 
     private void Update()
     {
         if (!isOwner) return;
         t += Time.deltaTime;
-        if (t >= 1f/updateRate)
+        if (t >= 1f/updateRate && Vector3.Distance(transform.position,prevPos) < moveDelta)
         {
             t = 0;
+            prevPos = transform.position;
             NetworkServer.MovementUpdate(new Packet(PacketType.Movement, NetworkServer.playerId, "Server", (id, transform.position)));
         }
     }
