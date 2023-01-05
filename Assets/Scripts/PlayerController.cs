@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour
     public ParticleSystem muzzleflashVFX;
     public ParticleSystem bulletVFX;
 
+    NetworkTransform nT;
+
     bool isSprinting = false;
 
     Vector3 movement;
@@ -28,6 +30,9 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        nT = GetComponent<NetworkTransform>();
+
+        if (!nT.isOwner) return;
         characterController = GetComponent<CharacterController>();
         cam = Camera.main;
     }
@@ -35,6 +40,8 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        if (!nT.isOwner) return;
         GetInputs();
         Move();
 
