@@ -70,9 +70,11 @@ public class NetworkServer
 
         _serverSpace.Get(playerId, "Join");
 
-        Debug.Log("Connected to private space");
-
         _ownSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
+
+        _ownSpace.Put("Test");
+
+        Debug.Log("Connected to private space " + string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
         LoadResources();
 
