@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     [Header("VFXs")]
     public ParticleSystem muzzleflashVFX;
     public ParticleSystem bulletVFX;
+    public GameObject deaht;
 
     NetworkTransform nT;
 
@@ -50,6 +51,12 @@ public class PlayerController : MonoBehaviour
             muzzleflashVFX.Play();
             bulletVFX.Play();
         }
+    }
+
+    private void OnParticleCollision(GameObject other)
+    {
+        Debug.Log(health);
+        TakeDamge(1);
     }
 
     private void FixedUpdate()
@@ -115,7 +122,8 @@ public class PlayerController : MonoBehaviour
 
         if (health <= 0)
         {
-            Debug.Log("U DEAD");
+            Instantiate(deaht, transform.position, transform.rotation);
+            Destroy(gameObject);
         }
     }
 }
