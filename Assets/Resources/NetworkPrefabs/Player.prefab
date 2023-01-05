@@ -121,6 +121,7 @@ MonoBehaviour:
   id: 0
   t: 0
   register: 1
+  moveDelta: 0.3
   isOwner: 0
 --- !u!114 &-8703517793839252993
 MonoBehaviour:
@@ -137,8 +138,6 @@ MonoBehaviour:
   health: 10
   moveSpeed: 5
   sprintMult: 1.8
-  sneakSpeed: 2.5
-  alertRange: 8
   sprintKey: 304
   fireKey: 323
   muzzleflashVFX: {fileID: 733199344083996511}
@@ -10356,7 +10355,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 0

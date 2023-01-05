@@ -8,13 +8,12 @@ public class PlayerController : MonoBehaviour
     public float health = 10f;
     public float moveSpeed = 5f;
     public float sprintMult = 1.8f;
-    public float sneakSpeed = 2.5f;
-    public float alertRange = 8f;
 
     [Header("KeyBinds")]
     public KeyCode sprintKey = KeyCode.LeftShift;
     public KeyCode fireKey = KeyCode.Mouse0;
 
+    [Header("VFXs")]
     public ParticleSystem muzzleflashVFX;
     public ParticleSystem bulletVFX;
 
