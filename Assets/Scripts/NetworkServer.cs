@@ -111,7 +111,9 @@ public class NetworkServer
         (int, float, float, float) data = ((int, float, float, float))packet.data;
         foreach (string id in _playerIds)
         {
-            if (id == networkObjectOwners[data.Item1]) { Debug.Log("Stopping packet to owner " + networkObjectOwners[data.Item1]);return; }
+            if (id == networkObjectOwners[data.Item1]) { Debug.Log("Stopping packet to owner " + networkObjectOwners[data.Item1]);continue; }
+
+            Debug.Log(id);
 
             _playerSpaces[id].Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3, data.Item4);
         }
