@@ -142,7 +142,7 @@ MonoBehaviour:
   t: 0
   register: 1
   moveDelta: 0.3
-  isOwner: 0
+  isOwner: 1
 --- !u!143 &1420822319
 CharacterController:
   m_ObjectHideFlags: 0
@@ -4106,7 +4106,7 @@ ParticleSystem:
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
-    collisionMessages: 0
+    collisionMessages: 1
     collidesWithDynamic: 1
     interiorCollisions: 0
   TriggerModule:
@@ -10027,7 +10027,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4669714247863539110}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.585, z: 0.451}
+  m_LocalPosition: {x: 0, y: -0.046, z: 0.451}
   m_LocalScale: {x: 0.19567, y: 0.19567, z: 1.1795819}
   m_ConstrainProportionsScale: 0
   m_Children:
