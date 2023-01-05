@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 2395551982905887795}
   - component: {fileID: 2395551982905887792}
   - component: {fileID: 2395551982905887793}
-  - component: {fileID: 2395551982905887798}
   - component: {fileID: -8703517793839252993}
+  - component: {fileID: 2395551982905887798}
+  - component: {fileID: 1420822319}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -102,6 +103,25 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-8703517793839252993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2395551982905887799}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 746719bcd19e19a46b7ba8acb7248c80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 10
+  moveSpeed: 5
+  sprintMult: 1.8
+  sprintKey: 304
+  fireKey: 323
+  muzzleflashVFX: {fileID: 733199344083996511}
+  bulletVFX: {fileID: 8615088932774362473}
 --- !u!114 &2395551982905887798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,25 +143,24 @@ MonoBehaviour:
   register: 1
   moveDelta: 0.3
   isOwner: 0
---- !u!114 &-8703517793839252993
-MonoBehaviour:
+--- !u!143 &1420822319
+CharacterController:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2395551982905887799}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 746719bcd19e19a46b7ba8acb7248c80, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: 10
-  moveSpeed: 5
-  sprintMult: 1.8
-  sprintKey: 304
-  fireKey: 323
-  muzzleflashVFX: {fileID: 733199344083996511}
-  bulletVFX: {fileID: 8615088932774362473}
+  serializedVersion: 2
+  m_Height: 1
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2417470937838071983
 GameObject:
   m_ObjectHideFlags: 0
@@ -841,7 +860,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 100
+    maxNumParticles: 10000
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 1
@@ -5092,7 +5111,7 @@ ParticleSystemRenderer:
   m_SortingFudge: 0
   m_NormalDirection: 1
   m_ShadowBias: 0
-  m_RenderAlignment: 1
+  m_RenderAlignment: 2
   m_Pivot: {x: 0, y: 0, z: 0}
   m_Flip: {x: 0, y: 0, z: 0}
   m_UseCustomVertexStreams: 0
