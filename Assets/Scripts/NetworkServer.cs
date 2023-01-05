@@ -12,13 +12,14 @@ public class NetworkServer
     public static bool masterClient = false;
 
     private static SpaceRepository _repository;
-    private static ISpace _currentSpace;
+    private static ISpace _joinSpace;
+    private static ISpace _ownSpace;
+
+    private static Dictionary<string,ISpace> _playerSpaces = new Dictionary<string,ISpace>();
     public static string playerId;
     private static List<string> _playerIds = new List<string>();
-
     private static int _currentId;
     private static Dictionary<int,NetworkTransform> networkObjects = new();
-
     private static Dictionary<string, GameObject> prefabs = new();
 
     public static void StartServer(ServerInfo info)
@@ -26,8 +27,8 @@ public class NetworkServer
         masterClient = true;
         _repository = new SpaceRepository();
         _repository.AddGate(string.Format("{0}://{1}:{2}?{3}", info.protocol, info.ip, info.port, info.connectionType));
-        _currentSpace = new SequentialSpace();
-        _repository.AddSpace(info.space, _currentSpace);
+        _joinSpace = new SequentialSpace();
+        _repository.AddSpace(info.space, _joinSpace);
 
         
         Debug.Log("Server Started: " + info);
@@ -51,15 +52,21 @@ public class NetworkServer
     {
         masterClient = false;
 
-        _currentSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, info.space, info.connectionType));
+        _joinSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, info.space, info.connectionType));
 
         playerId = Guid.NewGuid().ToString();
 
         _playerIds.Add(playerId);
 
-        _currentSpace.Put("Server", "Join", playerId);
+        _joinSpace.Put("Server", "Join", playerId);
 
         Debug.Log("Connected to server: " + info);
+
+        _joinSpace.Get(playerId, "Join");
+
+        Debug.Log("Connected to private space");
+
+        _ownSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
         LoadResources();
 
@@ -82,14 +89,14 @@ public class NetworkServer
     {
         if (!prefabs.ContainsKey(objName)) throw new ArgumentException("Object does not exist in prefabs");
 
-        _currentSpace.Put("Server","Instantiate","Player",playerId);
+        _joinSpace.Put("Server","Instantiate","Player",playerId);
     }
 
     public static void MovementUpdate(Packet packet)
     {
         (int, Vector3) data = ((int, Vector3))packet.data;
 
-        _currentSpace.Put(packet.target, packet.type.ToString(), data.Item1, data.Item2.x, data.Item2.y, data.Item2.z);
+        _joinSpace.Put(packet.target, packet.type.ToString(), data.Item1, data.Item2.x, data.Item2.y, data.Item2.z);
     }
 
     private static void BroadcastMovementUpdate(Packet packet)
@@ -98,7 +105,7 @@ public class NetworkServer
         {
             (int, float, float, float) data = ((int, float, float, float))packet.data;
 
-            _currentSpace.Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3, data.Item4);
+            _joinSpace.Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3, data.Item4);
         }
     }
 
@@ -107,7 +114,7 @@ public class NetworkServer
         foreach (string id in _playerIds)
         {
             (string, string, int) data = ((string, string, int))packet.data;
-            _currentSpace.Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3);
+            _joinSpace.Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3);
         }
     }
 
@@ -115,14 +122,14 @@ public class NetworkServer
     {
         while(true)
         {
-            ITuple tuple = _currentSpace.GetP(playerId, typeof(string), typeof(int), typeof(float), typeof(float), typeof(float));
+            ITuple tuple = _joinSpace.GetP(playerId, typeof(string), typeof(int), typeof(float), typeof(float), typeof(float));
             if (tuple != null && (string)tuple[1] == "Movement")
             {
                 Debug.Log("Got movement update");
                 networkObjects[(int)tuple[2]].UpdatePosition(new Vector3((float)tuple[3], (float)tuple[4], (float)tuple[5]));
             }
 
-            tuple = _currentSpace.GetP(playerId, typeof(string), typeof(string), typeof(string), typeof(int));
+            tuple = _joinSpace.GetP(playerId, typeof(string), typeof(string), typeof(string), typeof(int));
 
             if (tuple != null && (string)tuple[1] == "Instantiate")
             {
@@ -147,16 +154,21 @@ public class NetworkServer
     {
         while(true)
         {
-            ITuple tuple = _currentSpace.GetP("Server", typeof(string), typeof(string));
+            ITuple tuple = _joinSpace.GetP("Server", typeof(string), typeof(string));
 
             if (tuple != null && (string)tuple[1] == "Join")
             {
                 Debug.Log("Player " + tuple[2] + " Joined");
 
                 _playerIds.Add((string)tuple[2]);
+
+                ISpace newPlayerSpace = new SequentialSpace();
+
+                _repository.AddSpace((string)tuple[2],newPlayerSpace);
+                _playerSpaces.Add((string)tuple[2],newPlayerSpace);
             }
 
-            tuple = _currentSpace.GetP("Server", typeof(string), typeof(string), typeof(string));
+            tuple = _joinSpace.GetP("Server", typeof(string), typeof(string), typeof(string));
 
             if (tuple != null && (string)tuple[1] == "Instantiate")
             {
@@ -164,7 +176,7 @@ public class NetworkServer
                 BroadcastInstantiateUpdate(new Packet(PacketType.Instantiate, "Server", "Player", ((string)tuple[2], (string)tuple[3], _currentId++)));
             }
 
-            tuple = _currentSpace.GetP("Server", typeof(string), typeof(int), typeof(float), typeof(float), typeof(float));
+            tuple = _joinSpace.GetP("Server", typeof(string), typeof(int), typeof(float), typeof(float), typeof(float));
 
             if (tuple != null && (string)tuple[1] == "Movement")
             {
