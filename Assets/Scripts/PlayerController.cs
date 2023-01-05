@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
     [Header("VFXs")]
     public ParticleSystem muzzleflashVFX;
     public ParticleSystem bulletVFX;
-    public GameObject deaht;
+    public GameObject death;
 
     NetworkTransform nT;
 
@@ -99,6 +99,9 @@ public class PlayerController : MonoBehaviour
                 movement *= moveSpeed;
             }
         }
+
+        movement = new Vector3(movement.x, -1, movement.z);
+
         movement *= Time.deltaTime;
         characterController.Move(movement);
     }
@@ -122,7 +125,7 @@ public class PlayerController : MonoBehaviour
 
         if (health <= 0)
         {
-            Instantiate(deaht, transform.position, transform.rotation);
+            Instantiate(death, transform.position, transform.rotation);
             Destroy(gameObject);
         }
     }
