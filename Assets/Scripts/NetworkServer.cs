@@ -32,10 +32,14 @@ public class NetworkServer
         _serverSpace = new SequentialSpace();
         _repository.AddSpace(info.space, _serverSpace);
 
-        
         Debug.Log("Server Started: " + info);
 
         playerId = RandomString(16);
+
+        _ownSpace = new SequentialSpace();
+
+        _repository.AddSpace(playerId, _ownSpace);
+        _playerSpaces.Add(playerId, _ownSpace);
 
         _playerIds.Add(playerId);
 
@@ -123,14 +127,14 @@ public class NetworkServer
     {
         while(true)
         {
-            ITuple tuple = _serverSpace.GetP(playerId, typeof(string), typeof(int), typeof(float), typeof(float), typeof(float));
+            ITuple tuple = _ownSpace.GetP(playerId, typeof(string), typeof(int), typeof(float), typeof(float), typeof(float));
             if (tuple != null && (string)tuple[1] == "Movement")
             {
                 Debug.Log("Got movement update");
                 networkObjects[(int)tuple[2]].UpdatePosition(new Vector3((float)tuple[3], (float)tuple[4], (float)tuple[5]));
             }
 
-            tuple = _serverSpace.GetP(playerId, typeof(string), typeof(string), typeof(string), typeof(int));
+            tuple = _ownSpace.GetP(playerId, typeof(string), typeof(string), typeof(string), typeof(int));
 
             if (tuple != null && (string)tuple[1] == "Instantiate")
             {
