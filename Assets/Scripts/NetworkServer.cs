@@ -4,6 +4,7 @@ using dotSpace.Objects.Space;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 
@@ -33,7 +34,7 @@ public class NetworkServer
         
         Debug.Log("Server Started: " + info);
 
-        playerId = Guid.NewGuid().ToString();
+        playerId = RandomString(16);
 
         _playerIds.Add(playerId);
 
@@ -55,7 +56,7 @@ public class NetworkServer
 
             _joinSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, info.space, info.connectionType));
 
-            playerId = Guid.NewGuid().ToString();
+            playerId = RandomString(16);
 
             _playerIds.Add(playerId);
 
@@ -169,7 +170,7 @@ public class NetworkServer
                 _repository.AddSpace((string)tuple[2],newPlayerSpace);
                 _playerSpaces.Add((string)tuple[2],newPlayerSpace);
 
-                _joinSpace.Put("");
+                _joinSpace.Put((string)tuple[2],"Join");
             }
 
             tuple = _joinSpace.GetP("Server", typeof(string), typeof(string), typeof(string));
@@ -188,6 +189,15 @@ public class NetworkServer
                 BroadcastMovementUpdate(new Packet(PacketType.Movement, "Server", "Player", ((int)tuple[2], (float)tuple[3], (float)tuple[4], (float)tuple[5])));
             }
         }
+    }
+
+    private static System.Random random = new System.Random();
+
+    public static string RandomString(int length)
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        return new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
     }
 }
 
