@@ -72,10 +72,11 @@ public class NetworkServer
 
         _ownSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
-        _ownSpace.Put("Test");
+        _ownSpace.Put("SYNC");
 
         Debug.Log("Connected to private space " + string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
+        _ownSpace.Get("ACK");
         LoadResources();
 
         GBHelper.Start(HandleUpdates());
@@ -174,6 +175,9 @@ public class NetworkServer
                 _repository.AddSpace((string)tuple[2],newPlayerSpace);
                 _playerSpaces.Add((string)tuple[2],newPlayerSpace);
                 _serverSpace.Put((string)tuple[2],"Join");
+                Debug.Log(newPlayerSpace.Get(typeof(string)));
+
+                newPlayerSpace.Put("ACK");
             }
 
             tuple = _serverSpace.GetP("Server", typeof(string), typeof(string), typeof(string));
