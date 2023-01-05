@@ -50,27 +50,29 @@ public class NetworkServer
 
     public static void JoinServer(ServerInfo info)
     {
-        masterClient = false;
+        new Thread(() => {
+            masterClient = false;
 
-        _joinSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, info.space, info.connectionType));
+            _joinSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, info.space, info.connectionType));
 
-        playerId = Guid.NewGuid().ToString();
+            playerId = Guid.NewGuid().ToString();
 
-        _playerIds.Add(playerId);
+            _playerIds.Add(playerId);
 
-        _joinSpace.Put("Server", "Join", playerId);
+            _joinSpace.Put("Server", "Join", playerId);
 
-        Debug.Log("Connected to server: " + info);
+            Debug.Log("Connected to server: " + info);
 
-        _joinSpace.Get(playerId, "Join");
+            _joinSpace.Get(playerId, "Join");
 
-        Debug.Log("Connected to private space");
+            Debug.Log("Connected to private space");
 
-        _ownSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
+            _ownSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
-        LoadResources();
+            LoadResources();
 
-        GBHelper.Start(HandleUpdates());
+            GBHelper.Start(HandleUpdates());
+        }).Start();
 
         
     }
@@ -166,6 +168,8 @@ public class NetworkServer
 
                 _repository.AddSpace((string)tuple[2],newPlayerSpace);
                 _playerSpaces.Add((string)tuple[2],newPlayerSpace);
+
+                _joinSpace.Put("");
             }
 
             tuple = _joinSpace.GetP("Server", typeof(string), typeof(string), typeof(string));
