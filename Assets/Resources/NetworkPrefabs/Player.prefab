@@ -139,7 +139,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b382b8c95e2cdc4b895f266e8ed7702, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updateRate: 1
+  updateRate: 10
   syncTrans: 0
   syncRot: 0
   syncScale: 0
@@ -148,6 +148,7 @@ MonoBehaviour:
   register: 1
   moveDelta: 0.3
   isOwner: 0
+  dampening: 5
 --- !u!143 &1420822319
 CharacterController:
   m_ObjectHideFlags: 0
