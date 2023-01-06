@@ -10,8 +10,10 @@ public class PlayerController : MonoBehaviour
 
     [Header("Stats")]
     public float health = 10f;
+    public float maxHealth = 100f;
     public float moveSpeed = 5f;
     public float sprintMult = 1.8f;
+    public int shielded = 0;
 
     [Header("KeyBinds")]
     public KeyCode sprintKey = KeyCode.LeftShift;
@@ -19,8 +21,10 @@ public class PlayerController : MonoBehaviour
 
     [Header("VFXs")]
     public ParticleSystem muzzleflashVFX;
-    public ParticleSystem bulletVFX;
     public GameObject death;
+    public Material shieldMat;
+    Material playerMat;
+    MeshRenderer meshRenderer;
 
 
     NetworkTransform nT;
@@ -41,6 +45,8 @@ public class PlayerController : MonoBehaviour
         if (!nT.isOwner) return;
         characterController = GetComponent<CharacterController>();
         cam = Camera.main;
+        meshRenderer = gameObject.GetComponent<MeshRenderer>();
+        playerMat = meshRenderer.material;
     }
 
     // Update is called once per frame
@@ -131,6 +137,10 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamge(float dmg)
     {
+        if (0 < shielded)
+        {
+            return;
+        }
         health -= dmg;
 
         if (health <= 0)
@@ -144,6 +154,28 @@ public class PlayerController : MonoBehaviour
             }
 
             Destroy(gameObject);
+        }
+    }
+
+    public void AddHealth(float health)
+    {
+        this.health = Mathf.Min(health + this.health, maxHealth);
+    }
+
+    public void Shield(float time)
+    {
+        StartCoroutine(ShieldWaiter(time));
+    }
+
+    IEnumerator ShieldWaiter(float time)
+    {
+        shielded++;
+        meshRenderer.material = shieldMat;
+        yield return new WaitForSeconds(time);
+        shielded--;
+        if (shielded == 0)
+        {
+            meshRenderer.material = playerMat;
         }
     }
 }
