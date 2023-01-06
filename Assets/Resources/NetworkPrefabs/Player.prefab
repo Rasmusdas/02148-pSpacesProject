@@ -122,6 +122,7 @@ MonoBehaviour:
   fireKey: 323
   muzzleflashVFX: {fileID: 733199344083996511}
   bulletVFX: {fileID: 8615088932774362473}
+  death: {fileID: 7927370931967348113, guid: 336b49251312edd4da1fcd9d22e56116, type: 3}
 --- !u!114 &2395551982905887798
 MonoBehaviour:
   m_ObjectHideFlags: 0

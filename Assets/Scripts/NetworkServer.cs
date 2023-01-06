@@ -105,6 +105,12 @@ public class NetworkServer
 
         _serverSpace.Put(packet.target, packet.type.ToString(), data.Item1, data.Item2.x, data.Item2.y, data.Item2.z);
     }
+    internal static void RotationUpdate(Packet packet)
+    {
+        (int, Quaternion) data = ((int, Quaternion))packet.data;
+
+        _serverSpace.Put(packet.target, packet.type.ToString(), data.Item1, data.Item2.x, data.Item2.y, data.Item2.z, data.Item2.w);
+    }
 
     private static void BroadcastMovementUpdate(Packet packet)
     {
@@ -209,6 +215,7 @@ public class NetworkServer
         return new string(Enumerable.Repeat(chars, length)
             .Select(s => s[random.Next(s.Length)]).ToArray());
     }
+
 }
 
 public struct ServerInfo
@@ -252,5 +259,6 @@ public struct Packet
 
 public enum PacketType
 {
-    Movement,Instantiate
+    Movement,Instantiate,
+    Rotation
 }
