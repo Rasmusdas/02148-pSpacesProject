@@ -143,10 +143,7 @@ MonoBehaviour:
   t: 0
   register: 1
   moveDelta: 0.3
-<<<<<<< Updated upstream
-=======
   rotDelta: 0.1
->>>>>>> Stashed changes
   isOwner: 0
 --- !u!143 &1420822319
 CharacterController:
