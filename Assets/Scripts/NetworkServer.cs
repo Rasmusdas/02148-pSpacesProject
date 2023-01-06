@@ -175,6 +175,8 @@ public class NetworkServer
                 Vector3 position = UnpackageVector3(splitData[1]);
                 Quaternion rotation = UnpackgeQuaternion(splitData[2]);
                 networkObjects[id].UpdatePosition(position);
+                networkObjects[id].UpdateRotation(rotation);
+
             }
             if (type == "Instantiate")
             {
@@ -218,7 +220,11 @@ public class NetworkServer
 
         while (true)
         {
-            ITuple tuple = _serverSpace.GetP("Server", "Join", typeof(string));
+            ITuple tuple = _serverSpace.GetP(typeof(string), typeof(string), typeof(string));
+
+            if (tuple == null) continue;
+
+            Debug.Log("Server: Received Packet of Type " + (string)tuple[1]);
 
             if (tuple != null && (string)tuple[1] == "Join")
             {
@@ -233,12 +239,6 @@ public class NetworkServer
                 _serverSpace.Put((string)tuple[2],"Join");
                 continue;
             }
-
-            tuple = _serverSpace.GetP(typeof(string), typeof(string), typeof(string));
-
-            if (tuple == null) continue;
-
-            Debug.Log("Server: Received Packet of Type " + (string)tuple[1]);
 
             if (tuple != null && (string)tuple[1] == "Instantiate")
             {
