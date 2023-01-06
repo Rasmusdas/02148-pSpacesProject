@@ -352,11 +352,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 521767153}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!4 &525171178 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7570114426635061122, guid: 3b497019d83a50f45adb9de07bb5042b, type: 3}
-  m_PrefabInstance: {fileID: 1417195967}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -1027,14 +1022,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: -8703517793839252993, guid: 3b497019d83a50f45adb9de07bb5042b, type: 3}
-      propertyPath: bullet
-      value: 
-      objectReference: {fileID: 1511207710127842626, guid: 834154a7e7411954a96e762955da048d, type: 3}
-    - target: {fileID: -8703517793839252993, guid: 3b497019d83a50f45adb9de07bb5042b, type: 3}
-      propertyPath: gunTip
-      value: 
-      objectReference: {fileID: 525171178}
     - target: {fileID: 2395551982905887794, guid: 3b497019d83a50f45adb9de07bb5042b, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -1079,25 +1066,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2395551982905887798, guid: 3b497019d83a50f45adb9de07bb5042b, type: 3}
-      propertyPath: isOwner
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2395551982905887799, guid: 3b497019d83a50f45adb9de07bb5042b, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 5119407897930002170, guid: 3b497019d83a50f45adb9de07bb5042b, type: 3}
-      propertyPath: playOnAwake
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7570114426635061122, guid: 3b497019d83a50f45adb9de07bb5042b, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.784
-      objectReference: {fileID: 0}
-    - target: {fileID: 8615088932774362473, guid: 3b497019d83a50f45adb9de07bb5042b, type: 3}
-      propertyPath: playOnAwake
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b497019d83a50f45adb9de07bb5042b, type: 3}

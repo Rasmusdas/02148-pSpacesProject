@@ -19,7 +19,6 @@ public class PlayerController : MonoBehaviour
 
     [Header("VFXs")]
     public ParticleSystem muzzleflashVFX;
-    public ParticleSystem bulletVFX;
     public GameObject death;
 
 
