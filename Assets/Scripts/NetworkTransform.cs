@@ -16,6 +16,8 @@ public class NetworkTransform : MonoBehaviour
     public bool isOwner;
 
     Vector3 prevPos;
+    private float rotDelta;
+    private Quaternion prevRot;
 
     private void Start()
     {
@@ -27,17 +29,32 @@ public class NetworkTransform : MonoBehaviour
     {
         if (!isOwner) return;
         t += Time.deltaTime;
-        if (t >= 1f/updateRate && Vector3.Distance(transform.position,prevPos) > moveDelta)
+        if (t >= 1f / updateRate)
         {
+            if (Vector3.Distance(transform.position, prevPos) > moveDelta)
+            {
+                prevPos = transform.position;
+                NetworkServer.MovementUpdate(new Packet(PacketType.Movement, NetworkServer.playerId, "Server", JsonUtility.ToJson((id, transform.position))));
+            }
+
+            //if (Quaternion.Angle(transform.rotation, prevRot) > rotDelta)
+            //{
+            //    prevRot = transform.rotation;
+            //    NetworkServer.RotationUpdate(new Packet(PacketType.Rotation, NetworkServer.playerId, "Server", (id, transform.rotation)));
+            //}
             t = 0;
-            prevPos = transform.position;
-            NetworkServer.MovementUpdate(new Packet(PacketType.Movement, NetworkServer.playerId, "Server", (id, transform.position)));
         }
+
     }
 
     public void UpdatePosition(Vector3 pos)
     {
         transform.position = pos;
+    }
+
+    public void UpdateRotation(Quaternion rot)
+    {
+        transform.rotation = rot;
     }
 
 }

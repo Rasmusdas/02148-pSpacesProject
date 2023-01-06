@@ -143,7 +143,7 @@ MonoBehaviour:
   t: 0
   register: 1
   moveDelta: 0.3
-  isOwner: 1
+  isOwner: 0
 --- !u!143 &1420822319
 CharacterController:
   m_ObjectHideFlags: 0

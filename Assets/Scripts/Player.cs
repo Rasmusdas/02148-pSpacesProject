@@ -15,6 +15,17 @@ public class Player : MonoBehaviour
     public bool register;
     public bool inst2;
 
+    private void Start()
+    {
+        string json = JsonUtility.ToJson(("test",1,2,3));
+
+        Debug.Log(json);
+
+        var fromJson = ((string, int, int, int))JsonUtility.FromJson(json,typeof((string,int,int,int)));
+
+        Debug.Log(fromJson);
+    }
+
     public void Update()
     {
         if(inst)
