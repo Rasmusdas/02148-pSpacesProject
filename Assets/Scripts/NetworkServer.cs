@@ -239,9 +239,9 @@ public struct Packet
     public readonly PacketType type;
     public readonly string source;
     public readonly string target;
-    public object data;
+    public readonly string data
 
-    public Packet(PacketType type, string source, string target, object data)
+    public Packet(PacketType type, string source, string target, string data)
     {
         this.type = type;
         this.source = source;

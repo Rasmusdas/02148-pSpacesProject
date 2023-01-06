@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     public ParticleSystem bulletVFX;
     public GameObject deaht;
 
+
     NetworkTransform nT;
 
     bool isSprinting = false;
@@ -122,7 +123,12 @@ public class PlayerController : MonoBehaviour
 
         if (health <= 0)
         {
-            Instantiate(deaht, transform.position, transform.rotation);
+            GameObject obj = Instantiate(deaht, transform.position, transform.rotation);
+
+            foreach(var v in obj.GetComponentsInChildren<Rigidbody>())
+            {
+                v.AddExplosionForce(50,transform.position+Vector3.up,1,1,ForceMode.Impulse);
+            }
             Destroy(gameObject);
         }
     }
