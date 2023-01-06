@@ -34,7 +34,7 @@ public class NetworkTransform : MonoBehaviour
             if (Vector3.Distance(transform.position, prevPos) > moveDelta)
             {
                 prevPos = transform.position;
-                NetworkServer.MovementUpdate(new Packet(PacketType.Movement, NetworkServer.playerId, "Server", JsonUtility.ToJson((id, transform.position))));
+                NetworkServer.MovementUpdate(new Packet(PacketType.Movement, NetworkServer.playerId, "Server", id+"|"+Package(transform.position)));
             }
 
             //if (Quaternion.Angle(transform.rotation, prevRot) > rotDelta)
@@ -44,7 +44,11 @@ public class NetworkTransform : MonoBehaviour
             //}
             t = 0;
         }
+    }
 
+    private string Package(Vector3 vec)
+    {
+        return vec.x + ";" + vec.y + ";" + vec.z;
     }
 
     public void UpdatePosition(Vector3 pos)
