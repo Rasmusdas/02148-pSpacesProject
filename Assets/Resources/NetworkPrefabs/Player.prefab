@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 1420822319}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -118,12 +118,15 @@ MonoBehaviour:
   bullet: {fileID: 1511207710127842626, guid: 834154a7e7411954a96e762955da048d, type: 3}
   gunTip: {fileID: 7570114426635061122}
   health: 10
+  maxHealth: 100
   moveSpeed: 5
   sprintMult: 1.8
+  shielded: 0
   sprintKey: 304
   fireKey: 323
   muzzleflashVFX: {fileID: 733199344083996511}
   death: {fileID: 7927370931967348113, guid: 336b49251312edd4da1fcd9d22e56116, type: 3}
+  shieldMat: {fileID: 0}
 --- !u!114 &2395551982905887798
 MonoBehaviour:
   m_ObjectHideFlags: 0
