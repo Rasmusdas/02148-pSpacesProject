@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("GameObjects")]
+    public GameObject bullet;
+    public Transform gunTip;
+
     [Header("Stats")]
     public float health = 10f;
     public float moveSpeed = 5f;
@@ -49,8 +53,7 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(fireKey))
         {
-            muzzleflashVFX.Play();
-            bulletVFX.Play();
+            Shoot();
         }
     }
 
@@ -58,6 +61,12 @@ public class PlayerController : MonoBehaviour
     {
         Debug.Log(health);
         TakeDamge(1);
+    }
+
+    private void Shoot()
+    {
+        muzzleflashVFX.Play();
+        Instantiate(bullet, gunTip.position, gunTip.rotation);
     }
 
     private void FixedUpdate()

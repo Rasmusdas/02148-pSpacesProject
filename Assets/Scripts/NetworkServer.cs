@@ -251,11 +251,19 @@ public class NetworkServer
 
             //tuple = _serverSpace.GetP("Server", typeof(string), typeof(int), typeof(float), typeof(float), typeof(float), typeof(float));
 
+<<<<<<< Updated upstream
             //if (tuple != null && (string)tuple[1] == "Rotation")
             //{
             //    Debug.Log("Got server rotaion update");
             //    BroadcastRotationUpdate(new Packet(PacketType.Rotation, "Server", "Player", ((int)tuple[2], (float)tuple[3], (float)tuple[4], (float)tuple[5], (float)tuple[6])));
             //}
+=======
+            if (tuple != null && (string)tuple[1] == "Rotation")
+            {
+                Debug.Log("Got server rotaion update");
+                BroadcastRotationUpdate(new Packet(PacketType.Rotation, "Server", "Player", ((int)tuple[2], (float)tuple[3], (float)tuple[4], (float)tuple[5], (float)tuple[6])));
+            }
+>>>>>>> Stashed changes
 
         }
     }
