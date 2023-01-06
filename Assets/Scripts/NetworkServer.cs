@@ -173,19 +173,9 @@ public class NetworkServer
 
                 int id = int.Parse(splitData[0]);
                 Vector3 position = UnpackageVector3(splitData[1]);
-
+                Quaternion rotation = UnpackgeQuaternion(splitData[2]);
                 networkObjects[id].UpdatePosition(position);
             }
-
-            //tuple = _ownSpace.GetP(playerId, typeof(string), typeof(int), typeof(float), typeof(float), typeof(float), typeof(float));
-            //if (tuple != null && (string)tuple[1] == "Rotation")
-            //{
-            //    Debug.Log("Got rotation update");
-            //    networkObjects[(int)tuple[2]].UpdateRotation(new Quaternion((float)tuple[3], (float)tuple[4], (float)tuple[5], (float)tuple[6]));
-            //}
-
-            //tuple = _ownSpace.GetP(playerId, typeof(string), typeof(string), typeof(string), typeof(int));
-
             if (type == "Instantiate")
             {
                 string[] splitData = data.Split("|");
@@ -206,6 +196,13 @@ public class NetworkServer
                 }
             }
         }
+    }
+
+    private static Quaternion UnpackgeQuaternion(string q)
+    {
+        string[] components = q.Split(";");
+
+        return new Quaternion(float.Parse(components[0]), float.Parse(components[1]), float.Parse(components[2]), float.Parse(components[3]));
     }
 
     private static Vector3 UnpackageVector3(string vector)
@@ -234,10 +231,6 @@ public class NetworkServer
                 _repository.AddSpace((string)tuple[2],newPlayerSpace);
                 _playerSpaces.Add((string)tuple[2],newPlayerSpace);
                 _serverSpace.Put((string)tuple[2],"Join");
-                Debug.Log(newPlayerSpace.Get(typeof(string)));
-
-                newPlayerSpace.Put("ACK");
-
                 continue;
             }
 

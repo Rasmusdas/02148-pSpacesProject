@@ -31,10 +31,11 @@ public class NetworkTransform : MonoBehaviour
         t += Time.deltaTime;
         if (t >= 1f / updateRate)
         {
-            if (Vector3.Distance(transform.position, prevPos) > moveDelta)
+            if (Vector3.Distance(transform.position, prevPos) > moveDelta || Quaternion.Angle(transform.rotation,prevRot) > rotDelta)
             {
                 prevPos = transform.position;
-                NetworkServer.MovementUpdate(new Packet(PacketType.Movement, NetworkServer.playerId, "Server", id+"|"+Package(transform.position)));
+                prevRot = transform.rotation;
+                NetworkServer.MovementUpdate(new Packet(PacketType.Movement, NetworkServer.playerId, "Server", id+"|"+Package(transform.position)+"|"+Package(transform.rotation)));
             }
 
             //if (Quaternion.Angle(transform.rotation, prevRot) > rotDelta)
@@ -49,6 +50,11 @@ public class NetworkTransform : MonoBehaviour
     private string Package(Vector3 vec)
     {
         return vec.x + ";" + vec.y + ";" + vec.z;
+    }
+
+    private string Package(Quaternion q)
+    {
+        return q.x + ";" + q.y + ";" + q.z + ";" + q.w;
     }
 
     public void UpdatePosition(Vector3 pos)
