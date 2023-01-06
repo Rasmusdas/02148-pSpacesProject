@@ -72,11 +72,8 @@ public class NetworkServer
 
         _ownSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
-        _ownSpace.Put("SYNC");
-
         Debug.Log("Connected to private space " + string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
-        _ownSpace.Get("ACK");
         LoadResources();
 
         GBHelper.Start(HandleUpdates());
