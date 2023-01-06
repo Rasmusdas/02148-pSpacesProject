@@ -72,11 +72,8 @@ public class NetworkServer
 
         _ownSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
-        _ownSpace.Put("SYNC");
-
         Debug.Log("Connected to private space " + string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
-        _ownSpace.Get("ACK");
         LoadResources();
 
         GBHelper.Start(HandleUpdates());
@@ -96,89 +93,115 @@ public class NetworkServer
     {
         if (!prefabs.ContainsKey(objName)) throw new ArgumentException("Object does not exist in prefabs");
 
-        _serverSpace.Put("Server","Instantiate","Player",playerId);
+        _serverSpace.Put(playerId,"Instantiate","Player");
     }
 
     public static void MovementUpdate(Packet packet)
     {
-        (int, Vector3) data = ((int, Vector3))packet.data;
-
-        _serverSpace.Put(packet.target, packet.type.ToString(), data.Item1, data.Item2.x, data.Item2.y, data.Item2.z);
+        _serverSpace.Put(packet.source,packet.type,packet.data);
     }
-    internal static void RotationUpdate(Packet packet)
-    {
-        (int, Quaternion) data = ((int, Quaternion))packet.data;
+    //internal static void RotationUpdate(Packet packet)
+    //{
+    //    (int, Quaternion) data = ((int, Quaternion))packet.data;
 
-        _serverSpace.Put(packet.target, packet.type.ToString(), data.Item1, data.Item2.x, data.Item2.y, data.Item2.z, data.Item2.w);
-    }
+    //    _serverSpace.Put(packet.target, packet.type.ToString(), data.Item1, data.Item2.x, data.Item2.y, data.Item2.z, data.Item2.w);
+    //}
 
-    private static void BroadcastMovementUpdate(Packet packet)
+    private static void BroadcastPacket(Packet packet)
     {
-        (int, float, float, float) data = ((int, float, float, float))packet.data;
-        foreach (string id in _playerIds)
+        foreach(var id in _playerIds)
         {
-            if (id == networkObjectOwners[data.Item1]) { Debug.Log("Stopping packet to owner " + networkObjectOwners[data.Item1]);return; }
+            if (id == packet.source) Debug.Log("Stopping packet to owner " + packet.source);
 
-            _playerSpaces[id].Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3, data.Item4);
+            _playerSpaces[id].Put(packet.type.ToString(), packet.data);
         }
     }
+
+
+    //private static void BroadcastMovementUpdate(Packet packet)
+    //{
+    //    (int, float, float, float) data = ((int, float, float, float))packet.data;
+    //    foreach (string id in _playerIds)
+    //    {
+    //        if (id == networkObjectOwners[data.Item1]) { Debug.Log("Stopping packet to owner " + networkObjectOwners[data.Item1]);continue; }
+
+    //        Debug.Log(id);
+
+    //        _playerSpaces[id].Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3, data.Item4);
+    //    }
+    //}
 
     private static void BroadcastRotationUpdate(Packet packet)
     {
-        (int, float, float, float, float) data = ((int, float, float, float, float))packet.data;
-        foreach (string id in _playerIds)
-        {
-            if (id == networkObjectOwners[data.Item1]) { Debug.Log("Stopping packet to owner " + networkObjectOwners[data.Item1]); return; }
+        //(int, float, float, float, float) data = ((int, float, float, float, float))packet.data;
+        //foreach (string id in _playerIds)
+        //{
+        //    if (id == networkObjectOwners[data.Item1]) { Debug.Log("Stopping packet to owner " + networkObjectOwners[data.Item1]); continue; }
 
-            _playerSpaces[id].Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3, data.Item4, data.Item5);
-        }
+        //    _playerSpaces[id].Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3, data.Item4, data.Item5);
+        //}
     }
 
     private static void BroadcastInstantiateUpdate(Packet packet)
     {
-        foreach (string id in _playerIds)
-        {
-            (string, string, int) data = ((string, string, int))packet.data;
-            _playerSpaces[id].Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3);
-        }
+        //foreach (string id in _playerIds)
+        //{
+        //    (string, string, int) data = ((string, string, int))packet.data;
+        //    _playerSpaces[id].Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3);
+        //}
     }
 
     private static IEnumerator HandleUpdates()
     {
         while(true)
         {
-            ITuple tuple = _ownSpace.GetP(playerId, typeof(string), typeof(int), typeof(float), typeof(float), typeof(float));
-            if (tuple != null && (string)tuple[1] == "Movement")
+            yield return new WaitForEndOfFrame();
+            ITuple tuple = _ownSpace.GetP(typeof(string), typeof(string));
+            if (tuple == null) continue;
+
+
+            string type = (string)tuple[0];
+            string data = (string)tuple[1];
+
+            Debug.Log("Client: Received Packet of Type " + (string)tuple[0]);
+
+            if (type == "Movement")
             {
-                Debug.Log("Got movement update");
-                networkObjects[(int)tuple[2]].UpdatePosition(new Vector3((float)tuple[3], (float)tuple[4], (float)tuple[5]));
+                Debug.Log("Got Movement update");
+
+                (int, Vector3) movementData = ((int, Vector3))JsonUtility.FromJson(data,typeof((int, Vector3)));
+
+                networkObjects[movementData.Item1].UpdatePosition(movementData.Item2);
             }
 
-            tuple = _ownSpace.GetP(playerId, typeof(string), typeof(int), typeof(float), typeof(float), typeof(float), typeof(float));
-            if (tuple != null && (string)tuple[1] == "Rotation")
-            {
-                Debug.Log("Got rotation update");
-                networkObjects[(int)tuple[2]].UpdateRotation(new Quaternion((float)tuple[3], (float)tuple[4], (float)tuple[5], (float)tuple[6]));
-            }
+            //tuple = _ownSpace.GetP(playerId, typeof(string), typeof(int), typeof(float), typeof(float), typeof(float), typeof(float));
+            //if (tuple != null && (string)tuple[1] == "Rotation")
+            //{
+            //    Debug.Log("Got rotation update");
+            //    networkObjects[(int)tuple[2]].UpdateRotation(new Quaternion((float)tuple[3], (float)tuple[4], (float)tuple[5], (float)tuple[6]));
+            //}
 
-            tuple = _ownSpace.GetP(playerId, typeof(string), typeof(string), typeof(string), typeof(int));
+            //tuple = _ownSpace.GetP(playerId, typeof(string), typeof(string), typeof(string), typeof(int));
 
-            if (tuple != null && (string)tuple[1] == "Instantiate")
+            if (type == "Instantiate")
             {
                 Debug.Log("Got Inst update");
-                GameObject gb = GBHelper.Instantiate(prefabs[(string)tuple[2]]);
 
-                gb.GetComponent<NetworkTransform>().id = (int)tuple[4];
+                (int, string, string) instData = ((int, string, string))JsonUtility.FromJson(data, typeof((int, string, string)));
 
-                networkObjects.Add((int)tuple[4], gb.GetComponent<NetworkTransform>());
+                GameObject gb = GBHelper.Instantiate(prefabs[instData.Item3]);
 
-                if((string)tuple[3] == playerId)
+                gb.GetComponent<NetworkTransform>().id = instData.Item1;
+
+                networkObjects.Add(instData.Item1, gb.GetComponent<NetworkTransform>());
+
+                Debug.Log(instData.Item2);
+
+                if (instData.Item2 == playerId)
                 {
                     gb.GetComponent<NetworkTransform>().isOwner = true;
                 }
             }
-
-            yield return new WaitForEndOfFrame();
         }
     }
 
@@ -186,7 +209,7 @@ public class NetworkServer
     {
         while(true)
         {
-            ITuple tuple = _serverSpace.GetP("Server", typeof(string), typeof(string));
+            ITuple tuple = _serverSpace.GetP("Server", "Join", typeof(string));
 
             if (tuple != null && (string)tuple[1] == "Join")
             {
@@ -202,32 +225,36 @@ public class NetworkServer
                 Debug.Log(newPlayerSpace.Get(typeof(string)));
 
                 newPlayerSpace.Put("ACK");
+
+                continue;
             }
 
-            tuple = _serverSpace.GetP("Server", typeof(string), typeof(string), typeof(string));
+            tuple = _serverSpace.GetP(typeof(string), typeof(string), typeof(string));
+
+
+            if (tuple == null) continue;
+            Debug.Log("Server: Received Packet of Type " + (string)tuple[1]);
 
             if (tuple != null && (string)tuple[1] == "Instantiate")
             {
-                Debug.Log("Got server inst update");
-                networkObjectOwners.Add(_currentId, (string)tuple[3]);
-                BroadcastInstantiateUpdate(new Packet(PacketType.Instantiate, "Server", "Player", ((string)tuple[2], (string)tuple[3], _currentId++)));
+                networkObjectOwners.Add(_currentId, (string)tuple[0]);
+                BroadcastPacket(new Packet(PacketType.Instantiate, "All","Server",JsonUtility.ToJson((_currentId++, (string)tuple[0],"Player"))));
             }
-
-            tuple = _serverSpace.GetP("Server", typeof(string), typeof(int), typeof(float), typeof(float), typeof(float));
 
             if (tuple != null && (string)tuple[1] == "Movement")
             {
-                Debug.Log("Got server movement update");
-                BroadcastMovementUpdate(new Packet(PacketType.Movement, "Server", "Player", ((int)tuple[2], (float)tuple[3], (float)tuple[4], (float)tuple[5])));
+                BroadcastPacket(new Packet(PacketType.Movement, (string)tuple[0], "Server", (string)tuple[2]));
             }
 
-            tuple = _serverSpace.GetP("Server", typeof(string), typeof(int), typeof(float), typeof(float), typeof(float), typeof(float));
+            //tuple = _serverSpace.GetP("Server", typeof(string), typeof(int), typeof(float), typeof(float), typeof(float), typeof(float));
 
-            if (tuple != null && (string)tuple[1] == "Rotaion")
-            {
-                Debug.Log("Got server rotaion update");
-                BroadcastRotationUpdate(new Packet(PacketType.Rotation, "Server", "Player", ((int)tuple[2], (float)tuple[3], (float)tuple[4], (float)tuple[5], (float)tuple[6])));
-            }
+
+            //if (tuple != null && (string)tuple[1] == "Rotation")
+            //{
+            //    Debug.Log("Got server rotaion update");
+            //    BroadcastRotationUpdate(new Packet(PacketType.Rotation, "Server", "Player", ((int)tuple[2], (float)tuple[3], (float)tuple[4], (float)tuple[5], (float)tuple[6])));
+            //}
+
 
         }
     }
@@ -271,9 +298,9 @@ public struct Packet
     public readonly PacketType type;
     public readonly string source;
     public readonly string target;
-    public object data;
+    public readonly string data;
 
-    public Packet(PacketType type, string source, string target, object data)
+    public Packet(PacketType type, string source, string target, string data)
     {
         this.type = type;
         this.source = source;

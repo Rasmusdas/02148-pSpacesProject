@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("GameObjects")]
+    public GameObject bullet;
+    public Transform gunTip;
+
     [Header("Stats")]
     public float health = 10f;
     public float maxHealth = 100f;
@@ -17,11 +21,11 @@ public class PlayerController : MonoBehaviour
 
     [Header("VFXs")]
     public ParticleSystem muzzleflashVFX;
-    public ParticleSystem bulletVFX;
     public GameObject death;
     public Material shieldMat;
     Material playerMat;
     MeshRenderer meshRenderer;
+
 
     NetworkTransform nT;
 
@@ -55,8 +59,7 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(fireKey))
         {
-            muzzleflashVFX.Play();
-            bulletVFX.Play();
+            Shoot();
         }
     }
 
@@ -64,6 +67,12 @@ public class PlayerController : MonoBehaviour
     {
         Debug.Log(health);
         TakeDamge(1);
+    }
+
+    private void Shoot()
+    {
+        muzzleflashVFX.Play();
+        Instantiate(bullet, gunTip.position, gunTip.rotation);
     }
 
     private void FixedUpdate()
@@ -136,7 +145,14 @@ public class PlayerController : MonoBehaviour
 
         if (health <= 0)
         {
-            Instantiate(death, transform.position, transform.rotation);
+
+            GameObject obj = Instantiate(death, transform.position, transform.rotation);
+
+            foreach(var v in obj.GetComponentsInChildren<Rigidbody>())
+            {
+                v.AddExplosionForce(50,transform.position+Vector3.up,1,1,ForceMode.Impulse);
+            }
+
             Destroy(gameObject);
         }
     }
