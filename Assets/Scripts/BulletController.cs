@@ -8,6 +8,9 @@ public class BulletController : MonoBehaviour
     public float bulletSpeed = 50f;
     public float damge = 2f;
 
+    [Header("VFX")]
+    public GameObject hitVFX;
+    
     Rigidbody rb;
 
     // Start is called before the first frame update
@@ -30,5 +33,9 @@ public class BulletController : MonoBehaviour
         {
             collision.gameObject.GetComponent<PlayerController>().TakeDamge(damge);
         }
+
+        Instantiate(hitVFX, collision.contacts[0].point, Quaternion.Euler(collision.contacts[0].normal));
+       
+        Destroy(gameObject);
     }
 }
