@@ -125,6 +125,17 @@ public class NetworkServer
         }
     }
 
+    private static void BroadcastRotationUpdate(Packet packet)
+    {
+        (int, float, float, float, float) data = ((int, float, float, float, float))packet.data;
+        foreach (string id in _playerIds)
+        {
+            if (id == networkObjectOwners[data.Item1]) { Debug.Log("Stopping packet to owner " + networkObjectOwners[data.Item1]); return; }
+
+            _playerSpaces[id].Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3, data.Item4, data.Item5);
+        }
+    }
+
     private static void BroadcastInstantiateUpdate(Packet packet)
     {
         foreach (string id in _playerIds)
@@ -143,6 +154,13 @@ public class NetworkServer
             {
                 Debug.Log("Got movement update");
                 networkObjects[(int)tuple[2]].UpdatePosition(new Vector3((float)tuple[3], (float)tuple[4], (float)tuple[5]));
+            }
+
+            tuple = _ownSpace.GetP(playerId, typeof(string), typeof(int), typeof(float), typeof(float), typeof(float), typeof(float));
+            if (tuple != null && (string)tuple[1] == "Rotation")
+            {
+                Debug.Log("Got rotation update");
+                networkObjects[(int)tuple[2]].UpdateRotation(new Quaternion((float)tuple[3], (float)tuple[4], (float)tuple[5], (float)tuple[6]));
             }
 
             tuple = _ownSpace.GetP(playerId, typeof(string), typeof(string), typeof(string), typeof(int));
@@ -204,6 +222,15 @@ public class NetworkServer
                 Debug.Log("Got server movement update");
                 BroadcastMovementUpdate(new Packet(PacketType.Movement, "Server", "Player", ((int)tuple[2], (float)tuple[3], (float)tuple[4], (float)tuple[5])));
             }
+
+            tuple = _serverSpace.GetP("Server", typeof(string), typeof(int), typeof(float), typeof(float), typeof(float), typeof(float));
+
+            if (tuple != null && (string)tuple[1] == "Rotaion")
+            {
+                Debug.Log("Got server rotaion update");
+                BroadcastRotationUpdate(new Packet(PacketType.Rotation, "Server", "Player", ((int)tuple[2], (float)tuple[3], (float)tuple[4], (float)tuple[5], (float)tuple[6])));
+            }
+
         }
     }
 
