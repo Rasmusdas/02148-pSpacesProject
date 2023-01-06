@@ -15,6 +15,11 @@ public class NetworkTransform : MonoBehaviour
     public float moveDelta = 0.3f;
     public bool isOwner;
 
+    [Range(1, 10)]
+    public int dampening;
+
+    int ticket;
+
     Vector3 prevPos;
     private float rotDelta;
     private Quaternion prevRot;
@@ -59,12 +64,39 @@ public class NetworkTransform : MonoBehaviour
 
     public void UpdatePosition(Vector3 pos)
     {
-        transform.position = pos;
+        ticket++;
+        StartCoroutine(UpdatePositionInterpolation(pos));
     }
 
-    public void UpdateRotation(Quaternion rot)
+    private IEnumerator UpdatePositionInterpolation(Vector3 newPos)
     {
-        transform.rotation = rot;
+        int localTicket = ticket;
+        float tt = 0;
+        Vector3 startPos = transform.position;
+        while (tt < 1 && ticket == localTicket)
+        {
+            transform.position = Vector3.Lerp(startPos, newPos, tt);
+            tt += Time.deltaTime*25/dampening;
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    public void UpdateRotation(Quaternion pos)
+    {
+        StartCoroutine(UpdateRotationInterpolation(pos));
+    }
+
+    private IEnumerator UpdateRotationInterpolation(Quaternion newPos)
+    {
+        int localTicket = ticket;
+        float tt = 0;
+        Quaternion startPos = transform.rotation;
+        while (tt < 1 && ticket == localTicket)
+        {
+            transform.rotation = Quaternion.Lerp(startPos, newPos, tt);
+            tt += Time.deltaTime * 25 / dampening;
+            yield return new WaitForEndOfFrame();
+        }
     }
 
 }
