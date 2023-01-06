@@ -110,6 +110,7 @@ GameObject:
   - component: {fileID: 1511207710127842628}
   - component: {fileID: 1511207710127842631}
   - component: {fileID: 7278574666445042405}
+  - component: {fileID: -3815797334599422124}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Untagged
@@ -272,3 +273,25 @@ TrailRenderer:
   m_MinVertexDistance: 0.1
   m_Autodestruct: 0
   m_Emitting: 1
+--- !u!114 &-3815797334599422124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1511207710127842626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b382b8c95e2cdc4b895f266e8ed7702, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updateRate: 1
+  syncTrans: 0
+  syncRot: 0
+  syncScale: 0
+  id: 0
+  t: 0
+  register: 0
+  moveDelta: 0.3
+  isOwner: 0
+  dampening: 1

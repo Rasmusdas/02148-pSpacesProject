@@ -89,11 +89,11 @@ public class NetworkServer
         }
     }
 
-    public static void Instantiate(string objName)
+    public static void Instantiate(string objName,Vector3 position, Quaternion rotation)
     {
         if (!prefabs.ContainsKey(objName)) throw new ArgumentException("Object does not exist in prefabs");
 
-        _serverSpace.Put(playerId,"Instantiate","Player");
+        _serverSpace.Put(playerId,"Instantiate",objName+"|"+NetworkPackager.Package(position)+"|"+NetworkPackager.Package(rotation));
     }
 
     public static void MovementUpdate(Packet packet)
@@ -172,8 +172,8 @@ public class NetworkServer
                 string[] splitData = data.Split("|");
 
                 int id = int.Parse(splitData[0]);
-                Vector3 position = UnpackageVector3(splitData[1]);
-                Quaternion rotation = UnpackgeQuaternion(splitData[2]);
+                Vector3 position = NetworkPackager.UnpackageVector3(splitData[1]);
+                Quaternion rotation = NetworkPackager.UnpackgeQuaternion(splitData[2]);
                 networkObjects[id].UpdatePosition(position);
                 networkObjects[id].UpdateRotation(rotation);
 
@@ -185,10 +185,15 @@ public class NetworkServer
                 int objId = int.Parse(splitData[0]);
                 string id = splitData[1];
                 string prefabName = splitData[2];
+                string prefabPos = splitData[3];
+                string prefabRot = splitData[4];
 
                 GameObject gb = GBHelper.Instantiate(prefabs[prefabName]);
 
                 gb.GetComponent<NetworkTransform>().id = objId;
+
+                gb.transform.position = NetworkPackager.UnpackageVector3(prefabPos);
+                gb.transform.rotation = NetworkPackager.UnpackgeQuaternion(prefabRot);
 
                 networkObjects.Add(objId, gb.GetComponent<NetworkTransform>());
 
@@ -200,19 +205,6 @@ public class NetworkServer
         }
     }
 
-    private static Quaternion UnpackgeQuaternion(string q)
-    {
-        string[] components = q.Split(";");
-
-        return new Quaternion(float.Parse(components[0]), float.Parse(components[1]), float.Parse(components[2]), float.Parse(components[3]));
-    }
-
-    private static Vector3 UnpackageVector3(string vector)
-    {
-        string[] components = vector.Split(";");
-
-        return new Vector3(float.Parse(components[0]), float.Parse(components[1]), float.Parse(components[2]));
-    }
 
     private static void HandleServerUpdates()
     {
@@ -244,7 +236,7 @@ public class NetworkServer
             {
                 Debug.Log("Server: Sending Packet of Type " + (string)tuple[1]);
                 networkObjectOwners.Add(_currentId, (string)tuple[0]);
-                BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + "Player"));
+                BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + (string)tuple[2]));
             }
 
             if (tuple != null && (string)tuple[1] == "Movement")

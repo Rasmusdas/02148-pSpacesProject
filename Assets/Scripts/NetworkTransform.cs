@@ -6,7 +6,7 @@ using UnityEngine;
 public class NetworkTransform : MonoBehaviour
 {
 
-    [Range(1, 100)]
+    [Range(0, 100)]
     public int updateRate;
     public bool syncTrans, syncRot, syncScale;
     public int id;
@@ -32,7 +32,7 @@ public class NetworkTransform : MonoBehaviour
 
     private void Update()
     {
-        if (!isOwner) return;
+        if (!isOwner || updateRate == 0) return;
         t += Time.deltaTime;
         if (t >= 1f / updateRate)
         {
@@ -40,7 +40,7 @@ public class NetworkTransform : MonoBehaviour
             {
                 prevPos = transform.position;
                 prevRot = transform.rotation;
-                NetworkServer.MovementUpdate(new Packet(PacketType.Movement, NetworkServer.playerId, "Server", id+"|"+Package(transform.position)+"|"+Package(transform.rotation)));
+                NetworkServer.MovementUpdate(new Packet(PacketType.Movement, NetworkServer.playerId, "Server", id+"|"+NetworkPackager.Package(transform.position)+"|"+ NetworkPackager.Package(transform.rotation)));
             }
 
             //if (Quaternion.Angle(transform.rotation, prevRot) > rotDelta)
@@ -50,16 +50,6 @@ public class NetworkTransform : MonoBehaviour
             //}
             t = 0;
         }
-    }
-
-    private string Package(Vector3 vec)
-    {
-        return vec.x + ";" + vec.y + ";" + vec.z;
-    }
-
-    private string Package(Quaternion q)
-    {
-        return q.x + ";" + q.y + ";" + q.z + ";" + q.w;
     }
 
     public void UpdatePosition(Vector3 pos)

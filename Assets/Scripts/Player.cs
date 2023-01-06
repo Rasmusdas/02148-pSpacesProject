@@ -47,7 +47,7 @@ public class Player : MonoBehaviour
         if(inst2)
         {
             inst2 = false;
-            NetworkServer.Instantiate("Player");
+            NetworkServer.Instantiate("Player",new Vector3(UnityEngine.Random.Range(-10, 10),0, UnityEngine.Random.Range(-10, 10)),Quaternion.identity);
         }
     }
 }

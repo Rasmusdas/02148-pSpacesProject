@@ -72,7 +72,7 @@ public class PlayerController : MonoBehaviour
     private void Shoot()
     {
         muzzleflashVFX.Play();
-        Instantiate(bullet, gunTip.position, gunTip.rotation);
+        NetworkServer.Instantiate("Bullet", gunTip.position, gunTip.rotation);
     }
 
     private void FixedUpdate()
