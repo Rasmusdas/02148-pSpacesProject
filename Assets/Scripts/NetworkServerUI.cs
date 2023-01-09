@@ -22,13 +22,13 @@ public class NetworkServerUI : MonoBehaviour
             if (GUI.Button(new Rect(5, 5, 150, 25), "Start Server"))
             {
                 Debug.Log("Starting Server");
-                NetworkServer.StartServer(new ServerInfo("tcp", "0.0.0.0", 5555, "test", "CONN"));
+                NetworkServer.StartServer(new ServerInfo("tcp", "0.0.0.0", 5555, "test", "KEEP"));
                 inServer = true;
             }
             else if (GUI.Button(new Rect(5, 35, 150, 25), "Join Server"))
             {
                 Debug.Log("Joining Server");
-                NetworkServer.JoinServer(new ServerInfo("tcp", "82.211.223.108", 5555, "test", "CONN"));
+                NetworkServer.JoinServer(new ServerInfo("tcp", "82.211.223.108", 5555, "test", "KEEP"));
                 inServer = true;
             }
         }
