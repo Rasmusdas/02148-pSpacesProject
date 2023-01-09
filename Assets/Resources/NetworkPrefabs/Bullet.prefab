@@ -294,4 +294,5 @@ MonoBehaviour:
   register: 0
   moveDelta: 0.3
   isOwner: 0
+  owner: 
   dampening: 1
