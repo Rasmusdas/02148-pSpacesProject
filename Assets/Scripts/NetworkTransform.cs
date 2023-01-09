@@ -8,7 +8,7 @@ public class NetworkTransform : MonoBehaviour
 
     [Range(0, 100)]
     public int updateRate;
-    public bool syncTrans, syncRot, syncScale;
+    public bool sync;
     public int id;
     public float t;
     public bool register;
@@ -34,7 +34,7 @@ public class NetworkTransform : MonoBehaviour
 
     private void Update()
     {
-        if (!isOwner || updateRate == 0) return;
+        if (!isOwner || updateRate == 0 || !sync) return;
         t += Time.deltaTime;
         if (t >= 1f / updateRate)
         {
