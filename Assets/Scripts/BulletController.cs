@@ -18,6 +18,7 @@ public class BulletController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        nt = GetComponent<NetworkTransform>();
         rb = GetComponent<Rigidbody>();
         rb.velocity = transform.forward * bulletSpeed;
         Destroy(gameObject, 2f);
