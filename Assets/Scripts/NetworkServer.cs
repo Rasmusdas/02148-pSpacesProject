@@ -23,6 +23,7 @@ public class NetworkServer
     private static int _currentId;
     private static Dictionary<int,NetworkTransform> networkObjects = new();
     private static Dictionary<int, string> networkObjectOwners = new();
+    private static Dictionary<int, string> idToObjectType = new();
     private static Dictionary<string, GameObject> prefabs = new();
 
     private static bool verbose = true;
@@ -283,12 +284,19 @@ public class NetworkServer
                 _repository.AddSpace((string)tuple[2],newPlayerSpace);
                 _playerSpaces.Add((string)tuple[2],newPlayerSpace);
                 _serverSpace.Put((string)tuple[2],"Join");
+
+                foreach(var objs in networkObjectOwners)
+                {
+                    BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + objs.Value + "|" + idToObjectType[objs.Key]));
+                }
+
                 continue;
             }
 
             if (tuple != null && (string)tuple[1] == "Instantiate")
             {
                 networkObjectOwners.Add(_currentId, (string)tuple[0]);
+                idToObjectType.Add(_currentId, (string)tuple[2]);
                 BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + (string)tuple[2]));
             }
 

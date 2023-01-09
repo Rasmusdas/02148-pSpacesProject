@@ -66,7 +66,7 @@ public class PlayerController : MonoBehaviour
         GetInputs();
         Move();
 
-        if (Input.GetKeyDown(fireKey) || health <= 0)
+        if (Input.GetKeyDown(fireKey) && health > 0)
         {
             Shoot();
         }
@@ -130,7 +130,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        movement = new Vector3(movement.x, -1, movement.z);
+        movement = new Vector3(movement.x, -3, movement.z);
 
         movement *= Time.deltaTime;
         characterController.Move(movement);
@@ -176,6 +176,7 @@ public class PlayerController : MonoBehaviour
             }
 
             transform.position = new Vector3(0, health > 0 ? -1 : 0, 0);
+            
         }
     }
 
