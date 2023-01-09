@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 5f;
     public float sprintMult = 1.8f;
     public int shielded = 0;
+    public float fireratePistol = 0.5f;
 
     [Header("KeyBinds")]
     public KeyCode sprintKey = KeyCode.LeftShift;
@@ -26,10 +27,10 @@ public class PlayerController : MonoBehaviour
     Material playerMat;
     MeshRenderer meshRenderer;
 
-
     NetworkTransform nT;
 
     bool isSprinting = false;
+    bool canShoot = true;
 
     Vector3 movement;
 
@@ -71,8 +72,12 @@ public class PlayerController : MonoBehaviour
 
     private void Shoot()
     {
-        muzzleflashVFX.Play();
-        NetworkServer.Instantiate("Bullet", gunTip.position, gunTip.rotation);
+        if (canShoot)
+        {
+            muzzleflashVFX.Play();
+            NetworkServer.Instantiate("Bullet", gunTip.position, gunTip.rotation);
+            StartCoroutine(Firerate(fireratePistol));
+        }
     }
 
     private void FixedUpdate()
@@ -178,4 +183,12 @@ public class PlayerController : MonoBehaviour
             meshRenderer.material = playerMat;
         }
     }
+
+    IEnumerator Firerate(float firerate)
+    {
+        canShoot = false;
+        yield return new WaitForSeconds(firerate);
+        canShoot = true;
+    }
+
 }
