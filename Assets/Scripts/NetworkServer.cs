@@ -25,6 +25,7 @@ public class NetworkServer
     private static Dictionary<int, string> networkObjectOwners = new();
     private static Dictionary<int, string> idToObjectType = new();
     private static Dictionary<string, GameObject> prefabs = new();
+    public static bool running;
 
     private static bool verbose = true;
 
@@ -64,7 +65,7 @@ public class NetworkServer
 
     private static IEnumerator HandleUpdates()
     {
-        while(true)
+        while(running)
         {
             while (_updates.Count > 0)
             {
@@ -144,11 +145,23 @@ public class NetworkServer
 
     private static void BroadcastPacket(Packet packet)
     {
-        foreach(var id in _playerIds)
+        foreach (var id in _playerIds)
         {
             if (id == packet.source) continue;
 
-            if(verbose) Debug.Log("Server: Sending packet: " + packet);
+            if (verbose) Debug.Log("Server: Sending packet: " + packet);
+
+            _playerSpaces[id].Put(packet.type.ToString(), packet.data);
+        }
+    }
+
+    private static void SendPacket(Packet packet,string target)
+    {
+        foreach (var id in _playerIds)
+        {
+            if (id != target) continue;
+
+            if (verbose) Debug.Log("Server: Sending packet: " + packet);
 
             _playerSpaces[id].Put(packet.type.ToString(), packet.data);
         }
@@ -190,7 +203,7 @@ public class NetworkServer
 
     private static void HandleClientUpdates()
     {
-        while (true)
+        while(running)
         {
             IEnumerable<ITuple> tuples = _ownSpace.GetAll(typeof(string), typeof(string));
 
@@ -265,7 +278,7 @@ public class NetworkServer
     {
         if(verbose) Debug.Log("Server: Handler started");
 
-        while (true)
+        while(running)
         {
             ITuple tuple = _serverSpace.GetP(typeof(string), typeof(string), typeof(string));
 
@@ -287,7 +300,7 @@ public class NetworkServer
 
                 foreach(var objs in networkObjectOwners)
                 {
-                    BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + objs.Value + "|" + idToObjectType[objs.Key]));
+                    SendPacket(new Packet(PacketType.Instantiate, objs.Value, "Server", objs.Key + "|" + objs.Value + "|" + idToObjectType[objs.Key]), (string)tuple[2]);
                 }
 
                 continue;
