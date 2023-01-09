@@ -248,11 +248,14 @@ public class NetworkServer
                         gb.transform.position = NetworkPackager.UnpackageVector3(prefabPos);
                         gb.transform.rotation = NetworkPackager.UnpackgeQuaternion(prefabRot);
 
-                        networkObjects.Add(objId, gb.GetComponent<NetworkTransform>());
-
-                        if (id == playerId)
+                        if(prefabName != "Bullet")
                         {
-                            gb.GetComponent<NetworkTransform>().isOwner = true;
+                            networkObjects.Add(objId, gb.GetComponent<NetworkTransform>());
+
+                            if (id == playerId)
+                            {
+                                gb.GetComponent<NetworkTransform>().isOwner = true;
+                            }
                         }
                     });
 
@@ -308,9 +311,15 @@ public class NetworkServer
 
             if (tuple != null && (string)tuple[1] == "Instantiate")
             {
-                networkObjectOwners.Add(_currentId, (string)tuple[0]);
-                idToObjectType.Add(_currentId, (string)tuple[2]);
+                if((string)tuple[2] != "Bullet")
+                {
+                    networkObjectOwners.Add(_currentId, (string)tuple[0]);
+                    idToObjectType.Add(_currentId, (string)tuple[2]);
+                }
+
                 BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + (string)tuple[2]));
+
+
             }
 
             if (tuple != null && (string)tuple[1] == "Movement")

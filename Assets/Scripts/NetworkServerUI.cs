@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class NetworkServerUI : MonoBehaviour
 {
@@ -44,7 +45,10 @@ public class NetworkServerUI : MonoBehaviour
 
             if (GUI.Button(new Rect(5, 35, 150, 25), "Leave"))
             {
+                inServer = false;
                 NetworkServer.running = false;
+
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
     }
