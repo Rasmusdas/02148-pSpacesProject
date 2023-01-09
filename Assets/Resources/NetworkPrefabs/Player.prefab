@@ -118,7 +118,7 @@ MonoBehaviour:
   bullet: {fileID: 1511207710127842626, guid: 834154a7e7411954a96e762955da048d, type: 3}
   gunTip: {fileID: 7570114426635061122}
   health: 10
-  maxHealth: 100
+  maxHealth: 10
   moveSpeed: 5
   sprintMult: 1.8
   shielded: 0
@@ -139,7 +139,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b382b8c95e2cdc4b895f266e8ed7702, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updateRate: 15
+  updateRate: 10
   sync: 1
   id: 0
   t: 0

@@ -24,7 +24,7 @@ public class NetworkServer
     private static Dictionary<int, string> networkObjectOwners = new();
     private static Dictionary<string, GameObject> prefabs = new();
 
-    private static bool verbose = true;
+    private static bool verbose = false;
 
     public static void StartServer(ServerInfo info)
     {
@@ -166,10 +166,16 @@ public class NetworkServer
 
     private static IEnumerator HandleUpdates()
     {
-        while(true)
+        while (true)
         {
-            yield return new WaitForEndOfFrame();
             ITuple tuple = _ownSpace.GetP(typeof(string), typeof(string));
+            while (tuple == null)
+            {
+                tuple = _ownSpace.GetP(typeof(string), typeof(string));
+                yield return new WaitForEndOfFrame();
+            }
+
+
             if (tuple == null) continue;
 
             string type = (string)tuple[0];
