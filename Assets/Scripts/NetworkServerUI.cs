@@ -42,7 +42,7 @@ public class NetworkServerUI : MonoBehaviour
                 NetworkServer.Instantiate("Player", new Vector3(UnityEngine.Random.Range(-10, 10), 0, UnityEngine.Random.Range(-10, 10)), Quaternion.identity);
             }
 
-            if (GUI.Button(new Rect(5, 5, 150, 25), "Leave"))
+            if (GUI.Button(new Rect(5, 35, 150, 25), "Leave"))
             {
                 NetworkServer.running = false;
             }
