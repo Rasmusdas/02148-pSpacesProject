@@ -63,11 +63,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnParticleCollision(GameObject other)
-    {
-        Debug.Log(health);
-        TakeDamge(1);
-    }
+    //private void OnParticleCollision(GameObject other)
+    //{
+    //    Debug.Log(health);
+    //    TakeDamge(1);
+    //}
 
     private void Shoot()
     {

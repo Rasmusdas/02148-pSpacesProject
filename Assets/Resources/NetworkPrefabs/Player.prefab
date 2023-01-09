@@ -5176,7 +5176,7 @@ GameObject:
   - component: {fileID: 4256240476707938340}
   - component: {fileID: 967608957669131926}
   - component: {fileID: 6473932884128439671}
-  - component: {fileID: 190847087610760926}
+  - component: {fileID: 8775953689005664735}
   m_Layer: 0
   m_Name: Gun
   m_TagString: Untagged
@@ -5251,7 +5251,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &190847087610760926
+--- !u!65 &8775953689005664735
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
