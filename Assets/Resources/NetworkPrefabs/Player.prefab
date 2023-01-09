@@ -122,6 +122,7 @@ MonoBehaviour:
   moveSpeed: 5
   sprintMult: 1.8
   shielded: 0
+  fireratePistol: 0.5
   sprintKey: 304
   fireKey: 323
   muzzleflashVFX: {fileID: 733199344083996511}
@@ -139,7 +140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b382b8c95e2cdc4b895f266e8ed7702, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updateRate: 10
+  updateRate: 5
   sync: 1
   id: 0
   t: 0
@@ -147,7 +148,7 @@ MonoBehaviour:
   moveDelta: 0.3
   isOwner: 0
   owner: 
-  dampening: 5
+  dampening: 2
 --- !u!143 &1420822319
 CharacterController:
   m_ObjectHideFlags: 0
