@@ -15,11 +15,11 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 5f;
     public float sprintMult = 1.8f;
     public int shielded = 0;
-    public float fireratePistol = 0.5f;
+     float fireratePistol = 0.5f;
 
     [Header("KeyBinds")]
     public KeyCode sprintKey = KeyCode.LeftShift;
-    public KeyCode fireKey = KeyCode.Mouse0;
+    //public KeyCode fireKey = KeyCode.Mouse0;
 
     [Header("VFXs")]
     public ParticleSystem muzzleflashVFX;
@@ -66,10 +66,10 @@ public class PlayerController : MonoBehaviour
         GetInputs();
         Move();
 
-        if (Input.GetKeyDown(fireKey) && health > 0)
-        {
-            Shoot();
-        }
+        //if (Input.GetKeyDown(fireKey) && health > 0)
+        //{
+        //    Shoot();
+        //}
     }
 
     //private void OnParticleCollision(GameObject other)

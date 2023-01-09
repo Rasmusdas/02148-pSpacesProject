@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2395551982905887793}
   - component: {fileID: -8703517793839252993}
   - component: {fileID: 2395551982905887798}
+  - component: {fileID: 3926170066552390159}
   - component: {fileID: 1420822319}
   - component: {fileID: 8696995808488303135}
   m_Layer: 0
@@ -129,7 +130,7 @@ MonoBehaviour:
   fireKey: 323
   muzzleflashVFX: {fileID: 733199344083996511}
   death: {fileID: 7927370931967348113, guid: 336b49251312edd4da1fcd9d22e56116, type: 3}
-  shieldMat: {fileID: 0}
+  shieldMat: {fileID: 2100000, guid: 7318f289bc2453b4d8975fe483fb74c8, type: 2}
   healthBar: {fileID: 8565082959328110803}
 --- !u!114 &2395551982905887798
 MonoBehaviour:
@@ -152,6 +153,32 @@ MonoBehaviour:
   isOwner: 0
   owner: 
   dampening: 5
+--- !u!114 &3926170066552390159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2395551982905887799}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a60518e96224a7845b246a066d26a933, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bullet: {fileID: 1511207710127842626, guid: 834154a7e7411954a96e762955da048d, type: 3}
+  muzzelPoint: {fileID: 7570114426635061122}
+  bulletSpeed: 10
+  damage: 2
+  clipSize: 10
+  range: 2
+  fireRate: 0.6
+  reloadSpeed: 1
+  defultSpred: 5
+  autoFire: 0
+  bulletsAtOnes: 1
+  muzzelFlash: {fileID: 733199344083996511}
+  fireKey: 323
+  reloadKey: 114
 --- !u!143 &1420822319
 CharacterController:
   m_ObjectHideFlags: 0
@@ -373,7 +400,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7570114426635061122}
   m_Layer: 0
-  m_Name: Bullet
+  m_Name: MuzzelPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -496,7 +523,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3172863753352836426}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.5}
+  m_LocalPosition: {x: 0, y: -0.000000019038639, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
