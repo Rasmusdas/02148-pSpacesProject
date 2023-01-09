@@ -15,6 +15,8 @@ public class NetworkTransform : MonoBehaviour
     public float moveDelta = 0.3f;
     public bool isOwner;
 
+    public string owner;
+
     [Range(1, 10)]
     public int dampening;
 

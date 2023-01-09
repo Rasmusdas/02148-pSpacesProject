@@ -24,6 +24,8 @@ public class NetworkServer
     private static Dictionary<int, string> networkObjectOwners = new();
     private static Dictionary<string, GameObject> prefabs = new();
 
+    private static bool verbose = false;
+
     public static void StartServer(ServerInfo info)
     {
         masterClient = true;
@@ -32,7 +34,7 @@ public class NetworkServer
         _serverSpace = new SequentialSpace();
         _repository.AddSpace(info.space, _serverSpace);
 
-        Debug.Log("Server Started: " + info);
+        if(verbose) Debug.Log("Server Started: " + info);
 
         playerId = RandomString(16);
 
@@ -66,13 +68,13 @@ public class NetworkServer
 
         _serverSpace.Put("Server", "Join", playerId);
 
-        Debug.Log("Connected to server: " + info);
+        if(verbose) Debug.Log("Connected to server: " + info);
 
         _serverSpace.Get(playerId, "Join");
 
         _ownSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
-        Debug.Log("Connected to private space " + string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
+        if(verbose) Debug.Log("Connected to private space " + string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
         LoadResources();
 
@@ -98,7 +100,7 @@ public class NetworkServer
 
     public static void MovementUpdate(Packet packet)
     {
-        Debug.Log("Client: Sending Movement Packet: " + packet.source + "," + packet.type + "," + packet.data);
+        if(verbose) Debug.Log("Client: Sending Movement Packet: " + packet.source + "," + packet.type + "," + packet.data);
         _serverSpace.Put(packet.source,packet.type.ToString(),packet.data);
     }
     //internal static void RotationUpdate(Packet packet)
@@ -114,7 +116,7 @@ public class NetworkServer
         {
             if (id == packet.source) continue;
 
-            Debug.Log("Server: Sending packet: " + packet);
+            if(verbose) Debug.Log("Server: Sending packet: " + packet);
 
             _playerSpaces[id].Put(packet.type.ToString(), packet.data);
         }
@@ -126,9 +128,9 @@ public class NetworkServer
     //    (int, float, float, float) data = ((int, float, float, float))packet.data;
     //    foreach (string id in _playerIds)
     //    {
-    //        if (id == networkObjectOwners[data.Item1]) { Debug.Log("Stopping packet to owner " + networkObjectOwners[data.Item1]);continue; }
+    //        if (id == networkObjectOwners[data.Item1]) { if(verbose) Debug.Log("Stopping packet to owner " + networkObjectOwners[data.Item1]);continue; }
 
-    //        Debug.Log(id);
+    //        if(verbose) Debug.Log(id);
 
     //        _playerSpaces[id].Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3, data.Item4);
     //    }
@@ -139,7 +141,7 @@ public class NetworkServer
         //(int, float, float, float, float) data = ((int, float, float, float, float))packet.data;
         //foreach (string id in _playerIds)
         //{
-        //    if (id == networkObjectOwners[data.Item1]) { Debug.Log("Stopping packet to owner " + networkObjectOwners[data.Item1]); continue; }
+        //    if (id == networkObjectOwners[data.Item1]) { if(verbose) Debug.Log("Stopping packet to owner " + networkObjectOwners[data.Item1]); continue; }
 
         //    _playerSpaces[id].Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3, data.Item4, data.Item5);
         //}
@@ -165,7 +167,7 @@ public class NetworkServer
             string type = (string)tuple[0];
             string data = (string)tuple[1];
 
-            Debug.Log("Client: Received Packet of Type " + (string)tuple[0]);
+            if(verbose) Debug.Log("Client: Received Packet of Type " + (string)tuple[0]);
 
             if (type == "Movement")
             {
@@ -191,6 +193,7 @@ public class NetworkServer
                 GameObject gb = GBHelper.Instantiate(prefabs[prefabName]);
 
                 gb.GetComponent<NetworkTransform>().id = objId;
+                gb.GetComponent<NetworkTransform>().owner = id;
 
                 gb.transform.position = NetworkPackager.UnpackageVector3(prefabPos);
                 gb.transform.rotation = NetworkPackager.UnpackgeQuaternion(prefabRot);
@@ -208,7 +211,7 @@ public class NetworkServer
 
     private static void HandleServerUpdates()
     {
-        Debug.Log("Server: Handler started");
+        if(verbose) Debug.Log("Server: Handler started");
 
         while (true)
         {
@@ -216,11 +219,11 @@ public class NetworkServer
 
             if (tuple == null) continue;
 
-            Debug.Log("Server: Received Packet of Type " + (string)tuple[1]);
+            if(verbose) Debug.Log("Server: Received Packet of Type " + (string)tuple[1]);
 
             if (tuple != null && (string)tuple[1] == "Join")
             {
-                Debug.Log("Player " + tuple[2] + " Joined");
+                if(verbose) Debug.Log("Player " + tuple[2] + " Joined");
 
                 _playerIds.Add((string)tuple[2]);
 
@@ -234,14 +237,14 @@ public class NetworkServer
 
             if (tuple != null && (string)tuple[1] == "Instantiate")
             {
-                Debug.Log("Server: Sending Packet of Type " + (string)tuple[1]);
+                if(verbose) Debug.Log("Server: Sending Packet of Type " + (string)tuple[1]);
                 networkObjectOwners.Add(_currentId, (string)tuple[0]);
                 BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + (string)tuple[2]));
             }
 
             if (tuple != null && (string)tuple[1] == "Movement")
             {
-                Debug.Log("Server: Sending Packet of Type " + (string)tuple[1]);
+                if(verbose) Debug.Log("Server: Sending Packet of Type " + (string)tuple[1]);
                 BroadcastPacket(new Packet(PacketType.Movement, (string)tuple[0], "Server", (string)tuple[2]));
             }
 
@@ -250,7 +253,7 @@ public class NetworkServer
 
             //if (tuple != null && (string)tuple[1] == "Rotation")
             //{
-            //    Debug.Log("Got server rotaion update");
+            //    if(verbose) Debug.Log("Got server rotaion update");
             //    BroadcastRotationUpdate(new Packet(PacketType.Rotation, "Server", "Player", ((int)tuple[2], (float)tuple[3], (float)tuple[4], (float)tuple[5], (float)tuple[6])));
             //}
 
