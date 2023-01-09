@@ -15,6 +15,7 @@ public class NetworkServer
     private static SpaceRepository _repository;
     private static ISpace _serverSpace;
     private static ISpace _ownSpace;
+    private static Queue<Action> _updates = new Queue<Action>();
 
     private static Dictionary<string,ISpace> _playerSpaces = new Dictionary<string,ISpace>();
     public static string playerId;
@@ -24,7 +25,7 @@ public class NetworkServer
     private static Dictionary<int, string> networkObjectOwners = new();
     private static Dictionary<string, GameObject> prefabs = new();
 
-    private static bool verbose = false;
+    private static bool verbose = true;
 
     public static void StartServer(ServerInfo info)
     {
@@ -49,11 +50,29 @@ public class NetworkServer
 
         serverThread.Start();
 
+        Thread clientThread = new Thread(new ThreadStart(() => HandleClientUpdates()));
+
+        clientThread.Start();
+
         LoadResources();
 
         GBHelper.Start(HandleUpdates());
 
         
+    }
+
+    private static IEnumerator HandleUpdates()
+    {
+        while(true)
+        {
+            while (_updates.Count > 0)
+            {
+                Debug.Log("Executing Update");
+                _updates.Dequeue()();
+            }
+
+            yield return new WaitForEndOfFrame();
+        }
     }
 
     public static void JoinServer(ServerInfo info)
@@ -77,6 +96,10 @@ public class NetworkServer
         if(verbose) Debug.Log("Connected to private space " + string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
         LoadResources();
+
+        Thread clientThread = new Thread(new ThreadStart(() => HandleClientUpdates()));
+
+        clientThread.Start();
 
         GBHelper.Start(HandleUpdates());
     }
@@ -164,7 +187,7 @@ public class NetworkServer
         //}
     }
 
-    private static IEnumerator HandleUpdates()
+    private static void HandleClientUpdates()
     {
         while (true)
         {
@@ -183,49 +206,56 @@ public class NetworkServer
                 {
                     string[] splitData = data.Split("|");
 
-                    int id = int.Parse(splitData[0]);
                     Vector3 position = NetworkPackager.UnpackageVector3(splitData[1]);
                     Quaternion rotation = NetworkPackager.UnpackgeQuaternion(splitData[2]);
-                    networkObjects[id].UpdatePosition(position);
-                    networkObjects[id].UpdateRotation(rotation);
+
+                    _updates.Enqueue(() => {
+                        int id = int.Parse(splitData[0]);
+                        networkObjects[id].UpdatePosition(position);
+                        networkObjects[id].UpdateRotation(rotation);
+                    });
 
                 }
                 if (type == "Instantiate")
                 {
                     string[] splitData = data.Split("|");
 
-                    int objId = int.Parse(splitData[0]);
-                    string id = splitData[1];
-                    string prefabName = splitData[2];
-                    string prefabPos = splitData[3];
-                    string prefabRot = splitData[4];
+                    _updates.Enqueue(() => {
+                        int objId = int.Parse(splitData[0]);
+                        string id = splitData[1];
+                        string prefabName = splitData[2];
+                        string prefabPos = splitData[3];
+                        string prefabRot = splitData[4];
+                        GameObject gb = GBHelper.Instantiate(prefabs[prefabName]);
 
-                    GameObject gb = GBHelper.Instantiate(prefabs[prefabName]);
+                        gb.GetComponent<NetworkTransform>().id = objId;
+                        gb.GetComponent<NetworkTransform>().owner = id;
 
-                    gb.GetComponent<NetworkTransform>().id = objId;
-                    gb.GetComponent<NetworkTransform>().owner = id;
+                        gb.transform.position = NetworkPackager.UnpackageVector3(prefabPos);
+                        gb.transform.rotation = NetworkPackager.UnpackgeQuaternion(prefabRot);
 
-                    gb.transform.position = NetworkPackager.UnpackageVector3(prefabPos);
-                    gb.transform.rotation = NetworkPackager.UnpackgeQuaternion(prefabRot);
+                        networkObjects.Add(objId, gb.GetComponent<NetworkTransform>());
 
-                    networkObjects.Add(objId, gb.GetComponent<NetworkTransform>());
+                        if (id == playerId)
+                        {
+                            gb.GetComponent<NetworkTransform>().isOwner = true;
+                        }
+                    });
 
-                    if (id == playerId)
-                    {
-                        gb.GetComponent<NetworkTransform>().isOwner = true;
-                    }
+
                 }
                 if (type == "Health")
                 {
                     string[] splitData = data.Split("|");
 
-                    int id = int.Parse(splitData[0]);
-                    int health = int.Parse(splitData[1]);
-                    networkObjects[id].GetComponent<PlayerController>().UpdateHealth(health);
+                    _updates.Enqueue(() =>
+                    {
+                        int id = int.Parse(splitData[0]);
+                        int health = int.Parse(splitData[1]);
+                        networkObjects[id].GetComponent<PlayerController>().UpdateHealth(health);
+                    });
                 }
             }
-
-            yield return new WaitForEndOfFrame();
         }
     }
 
