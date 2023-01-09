@@ -177,6 +177,7 @@ GameObject:
   - component: {fileID: 623679892924987197}
   - component: {fileID: 3953666174919006955}
   - component: {fileID: 8834735654087338037}
+  - component: {fileID: -3684726805982909896}
   m_Layer: 0
   m_Name: MedPak
   m_TagString: Untagged
@@ -227,3 +228,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 25
+--- !u!114 &-3684726805982909896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7225640929412136960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b382b8c95e2cdc4b895f266e8ed7702, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updateRate: 0
+  sync: 0
+  id: 0
+  t: 0
+  register: 0
+  moveDelta: 0.3
+  isOwner: 0
+  owner: 
+  dampening: 0
