@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Gun : MonoBehaviour
 {
@@ -24,7 +26,9 @@ public class Gun : MonoBehaviour
     public int bulletsAtOnes = 1;
 
     [Header("VFX")]
-    public ParticleSystem muzzelFlash;
+    public ParticleSystem muzzleFlash;
+    public TextMeshProUGUI ammoText;
+    public Image reloadImage;
 
     [Header("KeyBinds")]
     public KeyCode fireKey = KeyCode.Mouse0;
@@ -37,8 +41,11 @@ public class Gun : MonoBehaviour
     float currenSpred;
 
     bool canShoot = true;
+    bool isReloading = false;
 
-    ParticleSystem muzzleFlash;
+    AudioSource gunShot;
+
+    GameObject UI;
 
     // Start is called before the first frame update
     void Start()
@@ -46,7 +53,10 @@ public class Gun : MonoBehaviour
         reloadTimeLeft = reloadSpeed;
         curretAmmo = clipSize;
         currenSpred = defultSpred;
-        muzzleFlash = GetComponentInChildren<ParticleSystem>();
+        gunShot = GetComponent<AudioSource>();
+
+        UI = ammoText.gameObject.transform.parent.gameObject;
+        UI.transform.parent = null;
     }
 
     // Update is called once per frame
@@ -62,11 +72,27 @@ public class Gun : MonoBehaviour
             {
                 Siglefire();
             }
-
-
-            Reload();
-
         }
+
+        Reload();
+
+
+        ammoText.text = curretAmmo + " / " + clipSize;
+        if (isReloading) 
+        {
+            reloadTimeLeft += Time.deltaTime;
+            reloadImage.fillAmount = 1 - reloadTimeLeft / reloadSpeed;
+        }
+        else
+        {
+            reloadImage.fillAmount = 0;
+            reloadTimeLeft = 0;
+        }
+    }
+
+    private void LateUpdate()
+    {
+        UI.transform.position = transform.position + new Vector3(0f, 1f,-.3f);
     }
 
     private void Reload()
@@ -80,8 +106,10 @@ public class Gun : MonoBehaviour
     IEnumerator ReloadTime(float reloadSpeed)
     {
         canShoot = false;
+        isReloading = true;
         yield return new WaitForSeconds(reloadSpeed);
         curretAmmo = clipSize;
+        isReloading = false;
         canShoot = true;
     }
 
@@ -103,6 +131,7 @@ public class Gun : MonoBehaviour
 
     private void Shoot()
     {
+        gunShot.Stop();
         for (int i = 0; i < bulletsAtOnes; i++)
         {
             float ofset = UnityEngine.Random.Range(-currenSpred / 2, currenSpred / 2);
@@ -110,6 +139,7 @@ public class Gun : MonoBehaviour
             NetworkServer.Instantiate("Bullet", muzzelPoint.position, muzzelRot);
         }
         muzzleFlash.Play();
+        gunShot.Play();
 
         curretAmmo -= bulletsAtOnes;
         StartCoroutine(Firerate(fireRate));

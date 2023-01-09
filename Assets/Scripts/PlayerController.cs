@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
     public float sprintMult = 1.8f;
     public int shielded = 0;
     public float fireratePistol = 0.5f;
-    Animator anim;
+   // Animator anim;
 
     [Header("KeyBinds")]
     public KeyCode sprintKey = KeyCode.LeftShift;
@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
 
     bool isSprinting = false;
     bool canShoot = true;
-    private AudioSource gunShot;
+    //private AudioSource gunShot;
 
     Vector3 movement;
 
@@ -49,12 +49,12 @@ public class PlayerController : MonoBehaviour
         nT = GetComponent<NetworkTransform>();
         meshRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
         playerMat = meshRenderer.material;
-        anim = GetComponent<Animator>();
+        //anim = GetComponent<Animator>();
         if (!nT.isOwner) return;
         characterController = GetComponent<CharacterController>();
         cam = Camera.main;
         cam.GetComponent<CamController>().player = gameObject;
-        gunShot = GetComponent<AudioSource>();
+        //gunShot = GetComponent<AudioSource>();
         
     }
 
@@ -86,7 +86,7 @@ public class PlayerController : MonoBehaviour
         if (canShoot)
         {
             muzzleflashVFX.Play();
-            gunShot.Play();
+            //gunShot.Play();
             NetworkServer.Instantiate("Bullet", gunTip.position, gunTip.rotation);
             StartCoroutine(Firerate(fireratePistol));
         }
@@ -122,7 +122,7 @@ public class PlayerController : MonoBehaviour
         if (movement != Vector3.zero)
         {
 
-            anim.SetBool("Move", true);
+           // anim.SetBool("Move", true);
             if (isSprinting)
             {
                 movement *= moveSpeed * sprintMult;
@@ -135,7 +135,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            anim.SetBool("Move", false);
+            //anim.SetBool("Move", false);
         }
 
         movement = new Vector3(movement.x, -3, movement.z);
