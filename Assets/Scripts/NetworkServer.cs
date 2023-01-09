@@ -223,7 +223,7 @@ public class NetworkServer
 
             if (tuple != null && (string)tuple[1] == "Join")
             {
-                if(verbose) Debug.Log("Player " + tuple[2] + " Joined");
+                Debug.Log("Player " + tuple[2] + " Joined");
 
                 _playerIds.Add((string)tuple[2]);
 

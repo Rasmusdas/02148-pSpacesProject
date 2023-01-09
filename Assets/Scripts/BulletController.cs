@@ -18,6 +18,7 @@ public class BulletController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        nt = GetComponent<NetworkTransform>();
         rb = GetComponent<Rigidbody>();
         rb.velocity = transform.forward * bulletSpeed;
         Destroy(gameObject, 2f);
@@ -33,18 +34,16 @@ public class BulletController : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
-            if(collision.gameObject.GetComponent<NetworkTransform>().id != nt.id)
+            if(collision.gameObject.GetComponent<NetworkTransform>().owner != nt.owner)
             {
                 collision.gameObject.GetComponent<PlayerController>().TakeDamge(damge);
                 Instantiate(hitVFX, collision.contacts[0].point, Quaternion.Euler(collision.contacts[0].normal));
-                Debug.Log("Hit " + collision.gameObject);
                 Destroy(gameObject);
             }
         }
         else
         {
             Instantiate(hitVFX, collision.contacts[0].point, Quaternion.Euler(collision.contacts[0].normal));
-            Debug.Log("Hit " + collision.gameObject);
             Destroy(gameObject);
         }
 
