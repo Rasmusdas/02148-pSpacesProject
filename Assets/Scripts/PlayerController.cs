@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Stats")]
     public float health = 10f;
-    public float maxHealth = 100f;
+    public float maxHealth = 10f;
     public float moveSpeed = 5f;
     public float sprintMult = 1.8f;
     public int shielded = 0;
@@ -42,17 +42,18 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         nT = GetComponent<NetworkTransform>();
-
+        meshRenderer = gameObject.GetComponent<MeshRenderer>();
+        playerMat = meshRenderer.material;
         if (!nT.isOwner) return;
         characterController = GetComponent<CharacterController>();
         cam = Camera.main;
-        meshRenderer = gameObject.GetComponent<MeshRenderer>();
-        playerMat = meshRenderer.material;
+
     }
 
     // Update is called once per frame
     void Update()
     {
+        playerMat.color = Color.Lerp(Color.red, Color.green, health / maxHealth);
 
         if (!nT.isOwner) return;
         GetInputs();
@@ -140,7 +141,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void TakeDamge(float dmg)
+    public void UpdateHealth(float dmg)
     {
         if (0 < shielded)
         {
@@ -153,13 +154,18 @@ public class PlayerController : MonoBehaviour
 
             GameObject obj = Instantiate(death, transform.position, transform.rotation);
 
-            foreach(var v in obj.GetComponentsInChildren<Rigidbody>())
+            foreach (var v in obj.GetComponentsInChildren<Rigidbody>())
             {
-                v.AddExplosionForce(50,transform.position+Vector3.up,1,1,ForceMode.Impulse);
+                v.AddExplosionForce(50, transform.position + Vector3.up, 1, 1, ForceMode.Impulse);
             }
 
             Destroy(gameObject);
         }
+    }
+
+    public void TakeDamge(int dmg)
+    {
+        NetworkServer.DamagePlayer(new Packet(PacketType.Health, NetworkServer.playerId, "Server", nT.id+"|" +dmg.ToString()));
     }
 
     public void AddHealth(float health)
