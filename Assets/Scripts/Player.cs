@@ -35,12 +35,12 @@ public class Player : MonoBehaviour
             if (register)
             {
                 Debug.Log("Starting Server");
-                NetworkServer.StartServer(new ServerInfo("tcp", "0.0.0.0", 5555, "test", "CONN"));
+                NetworkServer.StartServer(new ServerInfo("tcp", "0.0.0.0", 5555, "test", "KEEP"));
             }
             else
             {
                 Debug.Log("Joining Server");
-                NetworkServer.JoinServer(new ServerInfo("tcp", "82.211.223.108", 5555, "test", "CONN"));
+                NetworkServer.JoinServer(new ServerInfo("tcp", "82.211.223.108", 5555, "test", "KEEP"));
             }
         }
 

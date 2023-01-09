@@ -168,64 +168,65 @@ public class NetworkServer
     {
         while (true)
         {
-            ITuple tuple = _ownSpace.GetP(typeof(string), typeof(string));
-            while (tuple == null)
+            IEnumerable<ITuple> tuples = _ownSpace.GetAll(typeof(string), typeof(string));
+            while (tuples.Count() == 0)
             {
-                tuple = _ownSpace.GetP(typeof(string), typeof(string));
                 yield return new WaitForEndOfFrame();
             }
 
-
-            if (tuple == null) continue;
-
-            string type = (string)tuple[0];
-            string data = (string)tuple[1];
-
-            if(verbose) Debug.Log("Client: Received Packet of Type " + (string)tuple[0]);
-
-            if (type == "Movement")
+            foreach(ITuple tuple in tuples)
             {
-                string[] splitData = data.Split("|");
+                if (tuple == null) continue;
 
-                int id = int.Parse(splitData[0]);
-                Vector3 position = NetworkPackager.UnpackageVector3(splitData[1]);
-                Quaternion rotation = NetworkPackager.UnpackgeQuaternion(splitData[2]);
-                networkObjects[id].UpdatePosition(position);
-                networkObjects[id].UpdateRotation(rotation);
+                string type = (string)tuple[0];
+                string data = (string)tuple[1];
 
-            }
-            if (type == "Instantiate")
-            {
-                string[] splitData = data.Split("|");
+                if (verbose) Debug.Log("Client: Received Packet of Type " + (string)tuple[0]);
 
-                int objId = int.Parse(splitData[0]);
-                string id = splitData[1];
-                string prefabName = splitData[2];
-                string prefabPos = splitData[3];
-                string prefabRot = splitData[4];
-
-                GameObject gb = GBHelper.Instantiate(prefabs[prefabName]);
-
-                gb.GetComponent<NetworkTransform>().id = objId;
-                gb.GetComponent<NetworkTransform>().owner = id;
-
-                gb.transform.position = NetworkPackager.UnpackageVector3(prefabPos);
-                gb.transform.rotation = NetworkPackager.UnpackgeQuaternion(prefabRot);
-
-                networkObjects.Add(objId, gb.GetComponent<NetworkTransform>());
-
-                if (id == playerId)
+                if (type == "Movement")
                 {
-                    gb.GetComponent<NetworkTransform>().isOwner = true;
-                }
-            }
-            if(type == "Health")
-            {
-                string[] splitData = data.Split("|");
+                    string[] splitData = data.Split("|");
 
-                int id = int.Parse(splitData[0]);
-                int health = int.Parse(splitData[1]);
-                networkObjects[id].GetComponent<PlayerController>().UpdateHealth(health);
+                    int id = int.Parse(splitData[0]);
+                    Vector3 position = NetworkPackager.UnpackageVector3(splitData[1]);
+                    Quaternion rotation = NetworkPackager.UnpackgeQuaternion(splitData[2]);
+                    networkObjects[id].UpdatePosition(position);
+                    networkObjects[id].UpdateRotation(rotation);
+
+                }
+                if (type == "Instantiate")
+                {
+                    string[] splitData = data.Split("|");
+
+                    int objId = int.Parse(splitData[0]);
+                    string id = splitData[1];
+                    string prefabName = splitData[2];
+                    string prefabPos = splitData[3];
+                    string prefabRot = splitData[4];
+
+                    GameObject gb = GBHelper.Instantiate(prefabs[prefabName]);
+
+                    gb.GetComponent<NetworkTransform>().id = objId;
+                    gb.GetComponent<NetworkTransform>().owner = id;
+
+                    gb.transform.position = NetworkPackager.UnpackageVector3(prefabPos);
+                    gb.transform.rotation = NetworkPackager.UnpackgeQuaternion(prefabRot);
+
+                    networkObjects.Add(objId, gb.GetComponent<NetworkTransform>());
+
+                    if (id == playerId)
+                    {
+                        gb.GetComponent<NetworkTransform>().isOwner = true;
+                    }
+                }
+                if (type == "Health")
+                {
+                    string[] splitData = data.Split("|");
+
+                    int id = int.Parse(splitData[0]);
+                    int health = int.Parse(splitData[1]);
+                    networkObjects[id].GetComponent<PlayerController>().UpdateHealth(health);
+                }
             }
         }
     }
