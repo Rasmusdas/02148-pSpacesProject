@@ -24,7 +24,7 @@ public class NetworkServer
     private static Dictionary<int, string> networkObjectOwners = new();
     private static Dictionary<string, GameObject> prefabs = new();
 
-    private static bool verbose = false;
+    private static bool verbose = true;
 
     public static void StartServer(ServerInfo info)
     {
@@ -169,10 +169,6 @@ public class NetworkServer
         while (true)
         {
             IEnumerable<ITuple> tuples = _ownSpace.GetAll(typeof(string), typeof(string));
-            while (tuples.Count() == 0)
-            {
-                yield return new WaitForEndOfFrame();
-            }
 
             foreach(ITuple tuple in tuples)
             {
@@ -228,6 +224,8 @@ public class NetworkServer
                     networkObjects[id].GetComponent<PlayerController>().UpdateHealth(health);
                 }
             }
+
+            yield return new WaitForEndOfFrame();
         }
     }
 
