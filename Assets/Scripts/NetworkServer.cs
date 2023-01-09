@@ -24,7 +24,7 @@ public class NetworkServer
     private static Dictionary<int, string> networkObjectOwners = new();
     private static Dictionary<string, GameObject> prefabs = new();
 
-    private static bool verbose = true;
+    private static bool verbose = false;
 
     public static void StartServer(ServerInfo info)
     {
