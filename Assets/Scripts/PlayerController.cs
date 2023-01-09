@@ -62,11 +62,11 @@ public class PlayerController : MonoBehaviour
 
         healthBar.fillAmount = health / maxHealth;
 
-        if (!nT.isOwner || health <= 0) return;
+        if (!nT.isOwner) return;
         GetInputs();
         Move();
 
-        if (Input.GetKeyDown(fireKey))
+        if (Input.GetKeyDown(fireKey) || health <= 0)
         {
             Shoot();
         }
@@ -175,7 +175,7 @@ public class PlayerController : MonoBehaviour
                 v.AddExplosionForce(50, transform.position + Vector3.up, 1, 1, ForceMode.Impulse);
             }
 
-            transform.position = new Vector3(0, -1, 0);
+            transform.position = new Vector3(0, health <= 0 ? - 1 : 0, 0);
         }
     }
 
