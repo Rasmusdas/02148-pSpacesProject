@@ -34,6 +34,7 @@ public class PlayerController : MonoBehaviour
 
     bool isSprinting = false;
     bool canShoot = true;
+    private AudioSource gunShot;
 
     Vector3 movement;
 
@@ -50,7 +51,7 @@ public class PlayerController : MonoBehaviour
         if (!nT.isOwner) return;
         characterController = GetComponent<CharacterController>();
         cam = Camera.main;
-
+        gunShot = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -81,6 +82,7 @@ public class PlayerController : MonoBehaviour
         if (canShoot)
         {
             muzzleflashVFX.Play();
+            gunShot.Play();
             NetworkServer.Instantiate("Bullet", gunTip.position, gunTip.rotation);
             StartCoroutine(Firerate(fireratePistol));
         }
