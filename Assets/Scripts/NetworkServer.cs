@@ -103,6 +103,14 @@ public class NetworkServer
         if(verbose) Debug.Log("Client: Sending Movement Packet: " + packet.source + "," + packet.type + "," + packet.data);
         _serverSpace.Put(packet.source,packet.type.ToString(),packet.data);
     }
+
+    public static void DamagePlayer(Packet packet)
+    {
+        if (verbose) Debug.Log("Client: Sending Movement Packet: " + packet.source + "," + packet.type + "," + packet.data);
+
+        _serverSpace.Put(packet.source, packet.type.ToString(), packet.data);
+    }
+
     //internal static void RotationUpdate(Packet packet)
     //{
     //    (int, Quaternion) data = ((int, Quaternion))packet.data;
@@ -205,6 +213,14 @@ public class NetworkServer
                     gb.GetComponent<NetworkTransform>().isOwner = true;
                 }
             }
+            if(type == "Health")
+            {
+                string[] splitData = data.Split("|");
+
+                int id = int.Parse(splitData[0]);
+                int health = int.Parse(splitData[1]);
+                networkObjects[id].GetComponent<PlayerController>().UpdateHealth(health);
+            }
         }
     }
 
@@ -237,15 +253,18 @@ public class NetworkServer
 
             if (tuple != null && (string)tuple[1] == "Instantiate")
             {
-                if(verbose) Debug.Log("Server: Sending Packet of Type " + (string)tuple[1]);
                 networkObjectOwners.Add(_currentId, (string)tuple[0]);
                 BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + (string)tuple[2]));
             }
 
             if (tuple != null && (string)tuple[1] == "Movement")
             {
-                if(verbose) Debug.Log("Server: Sending Packet of Type " + (string)tuple[1]);
                 BroadcastPacket(new Packet(PacketType.Movement, (string)tuple[0], "Server", (string)tuple[2]));
+            }
+
+            if (tuple != null && (string)tuple[1] == "Health")
+            {
+                BroadcastPacket(new Packet(PacketType.Health, "All", "Server", (string)tuple[2]));
             }
 
             //tuple = _serverSpace.GetP("Server", typeof(string), typeof(int), typeof(float), typeof(float), typeof(float), typeof(float));
@@ -318,6 +337,5 @@ public struct Packet
 
 public enum PacketType
 {
-    Movement,Instantiate,
-    Rotation
+    Movement,Instantiate,Health
 }

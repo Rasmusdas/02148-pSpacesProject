@@ -6,7 +6,7 @@ public class BulletController : MonoBehaviour
 {
     [Header("Stats")]
     public float bulletSpeed = 50f;
-    public float damge = 2f;
+    public int damage = 2;
 
     [Header("VFX")]
     public GameObject hitVFX;
@@ -36,8 +36,11 @@ public class BulletController : MonoBehaviour
         {
             if(collision.gameObject.GetComponent<NetworkTransform>().owner != nt.owner)
             {
-                collision.gameObject.GetComponent<PlayerController>().TakeDamge(damge);
                 Instantiate(hitVFX, collision.contacts[0].point, Quaternion.Euler(collision.contacts[0].normal));
+                if(NetworkServer.playerId == nt.owner)
+                {
+                    collision.gameObject.GetComponent<PlayerController>().TakeDamge(damage);
+                }
                 Destroy(gameObject);
             }
         }

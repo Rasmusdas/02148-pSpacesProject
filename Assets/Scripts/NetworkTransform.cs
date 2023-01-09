@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
@@ -90,5 +91,4 @@ public class NetworkTransform : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
     }
-
 }
