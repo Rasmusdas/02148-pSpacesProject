@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -24,6 +25,8 @@ public class PlayerController : MonoBehaviour
     public ParticleSystem muzzleflashVFX;
     public GameObject death;
     public Material shieldMat;
+    public Image healthBar;
+
     Material playerMat;
     MeshRenderer meshRenderer;
 
@@ -53,7 +56,9 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        playerMat.color = Color.Lerp(Color.red, Color.green, health / maxHealth);
+        //playerMat.color = Color.Lerp(Color.red, Color.green, health / maxHealth);
+
+        healthBar.fillAmount = health / maxHealth;
 
         if (!nT.isOwner) return;
         GetInputs();
