@@ -13,7 +13,7 @@ public class MedPak : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Player")
+        if(other.tag == "Player" && other.gameObject.GetComponent<NetworkTransform>().isOwner)
         {
             other.gameObject.GetComponent<PlayerController>().AddHealth(health);
             Destroy(gameObject);

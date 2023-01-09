@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
     public float sprintMult = 1.8f;
     public int shielded = 0;
     public float fireratePistol = 0.5f;
+    Animator anim;
+
 
     [Header("KeyBinds")]
     public KeyCode sprintKey = KeyCode.LeftShift;
@@ -46,13 +48,15 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         nT = GetComponent<NetworkTransform>();
-        meshRenderer = gameObject.GetComponent<MeshRenderer>();
+        meshRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
         playerMat = meshRenderer.material;
+        anim = GetComponent<Animator>();
         if (!nT.isOwner) return;
         characterController = GetComponent<CharacterController>();
         cam = Camera.main;
         cam.GetComponent<CamController>().player = gameObject;
         gunShot = GetComponent<AudioSource>();
+        
     }
 
     // Update is called once per frame
@@ -119,6 +123,7 @@ public class PlayerController : MonoBehaviour
         if (movement != Vector3.zero)
         {
 
+            anim.SetBool("Move", true);
             if (isSprinting)
             {
                 movement *= moveSpeed * sprintMult;
@@ -128,6 +133,10 @@ public class PlayerController : MonoBehaviour
             {
                 movement *= moveSpeed;
             }
+        }
+        else
+        {
+            anim.SetBool("Move", false);
         }
 
         movement = new Vector3(movement.x, -3, movement.z);
@@ -175,7 +184,7 @@ public class PlayerController : MonoBehaviour
                 v.AddExplosionForce(50, transform.position + Vector3.up, 1, 1, ForceMode.Impulse);
             }
 
-            transform.position = new Vector3(0, health > 0 ? -1 : 0, 0);
+            transform.position = new Vector3(0, health > 0 ? -10 : 0, 0);
             
         }
     }

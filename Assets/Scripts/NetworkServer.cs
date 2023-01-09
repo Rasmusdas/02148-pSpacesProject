@@ -62,21 +62,6 @@ public class NetworkServer
 
         
     }
-
-    private static IEnumerator HandleUpdates()
-    {
-        while(running)
-        {
-            while (_updates.Count > 0)
-            {
-                Debug.Log("Executing Update");
-                _updates.Dequeue()();
-            }
-
-            yield return new WaitForEndOfFrame();
-        }
-    }
-
     public static void JoinServer(ServerInfo info)
     {
         masterClient = false;
@@ -136,13 +121,6 @@ public class NetworkServer
         _serverSpace.Put(packet.source, packet.type.ToString(), packet.data);
     }
 
-    //internal static void RotationUpdate(Packet packet)
-    //{
-    //    (int, Quaternion) data = ((int, Quaternion))packet.data;
-
-    //    _serverSpace.Put(packet.target, packet.type.ToString(), data.Item1, data.Item2.x, data.Item2.y, data.Item2.z, data.Item2.w);
-    //}
-
     private static void BroadcastPacket(Packet packet)
     {
         foreach (var id in _playerIds)
@@ -165,40 +143,6 @@ public class NetworkServer
 
             _playerSpaces[id].Put(packet.type.ToString(), packet.data);
         }
-    }
-
-
-    //private static void BroadcastMovementUpdate(Packet packet)
-    //{
-    //    (int, float, float, float) data = ((int, float, float, float))packet.data;
-    //    foreach (string id in _playerIds)
-    //    {
-    //        if (id == networkObjectOwners[data.Item1]) { if(verbose) Debug.Log("Stopping packet to owner " + networkObjectOwners[data.Item1]);continue; }
-
-    //        if(verbose) Debug.Log(id);
-
-    //        _playerSpaces[id].Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3, data.Item4);
-    //    }
-    //}
-
-    private static void BroadcastRotationUpdate(Packet packet)
-    {
-        //(int, float, float, float, float) data = ((int, float, float, float, float))packet.data;
-        //foreach (string id in _playerIds)
-        //{
-        //    if (id == networkObjectOwners[data.Item1]) { if(verbose) Debug.Log("Stopping packet to owner " + networkObjectOwners[data.Item1]); continue; }
-
-        //    _playerSpaces[id].Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3, data.Item4, data.Item5);
-        //}
-    }
-
-    private static void BroadcastInstantiateUpdate(Packet packet)
-    {
-        //foreach (string id in _playerIds)
-        //{
-        //    (string, string, int) data = ((string, string, int))packet.data;
-        //    _playerSpaces[id].Put(id, packet.type.ToString(), data.Item1, data.Item2, data.Item3);
-        //}
     }
 
     private static void HandleClientUpdates()
@@ -311,7 +255,7 @@ public class NetworkServer
 
             if (tuple != null && (string)tuple[1] == "Instantiate")
             {
-                if((string)tuple[2] != "Bullet")
+                if(!((string)tuple[2]).Contains("Bullet"))
                 {
                     networkObjectOwners.Add(_currentId, (string)tuple[0]);
                     idToObjectType.Add(_currentId, (string)tuple[2]);
@@ -331,17 +275,20 @@ public class NetworkServer
             {
                 BroadcastPacket(new Packet(PacketType.Health, "All", "Server", (string)tuple[2]));
             }
+        }
+    }
 
-            //tuple = _serverSpace.GetP("Server", typeof(string), typeof(int), typeof(float), typeof(float), typeof(float), typeof(float));
+    private static IEnumerator HandleUpdates()
+    {
+        while (running)
+        {
+            while (_updates.Count > 0)
+            {
+                Debug.Log("Executing Update");
+                _updates.Dequeue()();
+            }
 
-
-            //if (tuple != null && (string)tuple[1] == "Rotation")
-            //{
-            //    if(verbose) Debug.Log("Got server rotaion update");
-            //    BroadcastRotationUpdate(new Packet(PacketType.Rotation, "Server", "Player", ((int)tuple[2], (float)tuple[3], (float)tuple[4], (float)tuple[5], (float)tuple[6])));
-            //}
-
-
+            yield return new WaitForEndOfFrame();
         }
     }
 

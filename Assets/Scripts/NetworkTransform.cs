@@ -26,9 +26,11 @@ public class NetworkTransform : MonoBehaviour
     Vector3 prevPos;
     private float rotDelta;
     private Quaternion prevRot;
+    private Animator anim;
 
     private void Start()
     {
+        anim = GetComponent<Animator>();
         if (!isOwner) return;
         prevPos = transform.position;
     }
@@ -70,10 +72,12 @@ public class NetworkTransform : MonoBehaviour
         Vector3 startPos = transform.position;
         while (tt < 1 && ticket == localTicket)
         {
+            anim.SetBool("Move", true);
             transform.position = Vector3.Lerp(startPos, newPos, tt);
             tt += Time.deltaTime*25/dampening;
             yield return new WaitForEndOfFrame();
         }
+        anim.SetBool("Move", false);
     }
 
     public void UpdateRotation(Quaternion pos)

@@ -37,7 +37,7 @@ public class BulletController : MonoBehaviour
             if(collision.gameObject.GetComponent<NetworkTransform>().owner != nt.owner)
             {
                 Instantiate(hitVFX, collision.contacts[0].point, Quaternion.Euler(collision.contacts[0].normal));
-                if(NetworkServer.playerId == nt.owner)
+                if(nt.isOwner)
                 {
                     collision.gameObject.GetComponent<PlayerController>().TakeDamge(damage);
                 }
