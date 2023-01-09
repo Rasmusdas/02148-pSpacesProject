@@ -51,6 +51,7 @@ public class PlayerController : MonoBehaviour
         if (!nT.isOwner) return;
         characterController = GetComponent<CharacterController>();
         cam = Camera.main;
+        cam.GetComponent<CamController>().player = gameObject;
         gunShot = GetComponent<AudioSource>();
     }
 
@@ -61,7 +62,7 @@ public class PlayerController : MonoBehaviour
 
         healthBar.fillAmount = health / maxHealth;
 
-        if (!nT.isOwner) return;
+        if (!nT.isOwner || health <= 0) return;
         GetInputs();
         Move();
 
@@ -154,7 +155,15 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
-        health -= dmg;
+        
+        if(health - dmg > maxHealth)
+        {
+            health = maxHealth;
+        }
+        else
+        {
+            health -= dmg;
+        }
 
         if (health <= 0)
         {
@@ -166,7 +175,7 @@ public class PlayerController : MonoBehaviour
                 v.AddExplosionForce(50, transform.position + Vector3.up, 1, 1, ForceMode.Impulse);
             }
 
-            Destroy(gameObject);
+            transform.position = new Vector3(0, -1, 0);
         }
     }
 
@@ -177,7 +186,7 @@ public class PlayerController : MonoBehaviour
 
     public void AddHealth(float health)
     {
-        this.health = Mathf.Min(health + this.health, maxHealth);
+        TakeDamge(-(int)health);
     }
 
     public void Shield(float time)

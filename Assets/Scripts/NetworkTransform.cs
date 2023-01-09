@@ -59,6 +59,8 @@ public class NetworkTransform : MonoBehaviour
     {
         ticket++;
         StartCoroutine(UpdatePositionInterpolation(pos));
+
+        Debug.Log("reeeeee");
     }
 
     private IEnumerator UpdatePositionInterpolation(Vector3 newPos)

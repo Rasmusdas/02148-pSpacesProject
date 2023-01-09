@@ -11,12 +11,11 @@ public class CamController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        ofset = transform.position - player.transform.position;
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
-        transform.position = Vector3.Lerp(transform.position, player.transform.position + ofset, 1f);
+        transform.position = Vector3.Lerp(transform.position, player.transform.position + new Vector3(0, (transform.position - player.transform.position).y,0), 1f);
     }
 }
