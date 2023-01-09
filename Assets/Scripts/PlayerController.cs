@@ -175,7 +175,7 @@ public class PlayerController : MonoBehaviour
                 v.AddExplosionForce(50, transform.position + Vector3.up, 1, 1, ForceMode.Impulse);
             }
 
-            transform.position = new Vector3(0, health <= 0 ? - 1 : 0, 0);
+            transform.position = new Vector3(0, health > 0 ? -1 : 0, 0);
         }
     }
 
