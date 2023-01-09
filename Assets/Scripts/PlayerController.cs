@@ -53,6 +53,8 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
 
+        playerMat.color = Color.Lerp(Color.red, Color.green, health / maxHealth);
+
         if (!nT.isOwner) return;
         GetInputs();
         Move();
@@ -61,8 +63,6 @@ public class PlayerController : MonoBehaviour
         {
             Shoot();
         }
-
-        playerMat.color = Color.Lerp(Color.green, Color.red, health / maxHealth);
     }
 
     //private void OnParticleCollision(GameObject other)
