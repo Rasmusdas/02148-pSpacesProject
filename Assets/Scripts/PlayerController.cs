@@ -41,18 +41,17 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         nT = GetComponent<NetworkTransform>();
-
+        meshRenderer = gameObject.GetComponent<MeshRenderer>();
+        playerMat = meshRenderer.material;
         if (!nT.isOwner) return;
         characterController = GetComponent<CharacterController>();
         cam = Camera.main;
-        meshRenderer = gameObject.GetComponent<MeshRenderer>();
-        playerMat = meshRenderer.material;
+
     }
 
     // Update is called once per frame
     void Update()
     {
-
         playerMat.color = Color.Lerp(Color.red, Color.green, health / maxHealth);
 
         if (!nT.isOwner) return;
