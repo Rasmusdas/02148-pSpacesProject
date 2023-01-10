@@ -45,7 +45,7 @@ public class Gun : MonoBehaviour
     bool isReloading = false;
 
     AudioSource gunShot;
-
+    NetworkTransform nT;
     GameObject UI;
 
     // Start is called before the first frame update
@@ -55,14 +55,17 @@ public class Gun : MonoBehaviour
         curretAmmo = clipSize;
         currenSpred = defultSpred;
         gunShot = GetComponent<AudioSource>();
+        nT = GetComponent<NetworkTransform>();
 
         UI = ammoText.gameObject.transform.parent.gameObject;
         UI.transform.parent = null;
+        UI.SetActive(nT.isOwner);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!nT.isOwner) return;
         if (canShoot)
         {
             if (autoFire)
