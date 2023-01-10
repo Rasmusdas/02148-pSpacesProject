@@ -43,7 +43,7 @@ public class BulletController : MonoBehaviour
                 if(nt.isOwner)
                 {
                     collision.gameObject.GetComponent<PlayerController>().TakeDamge(damage);
-                    hitSound.Play();
+                    //hitSound.Play();
                 }
                 Destroy(gameObject);
             }
