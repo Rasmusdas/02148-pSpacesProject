@@ -57,7 +57,6 @@ public class PlayerController : MonoBehaviour
         cam.GetComponent<CamController>().player = gameObject;
         //gunShot = GetComponent<AudioSource>();
         
-        privateHealthBar.transform.parent.parent.gameObject.SetActive(nT.isOwner);
         publicHealthBar.transform.parent.parent.gameObject.SetActive(!nT.isOwner);
 
     }

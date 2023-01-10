@@ -55,9 +55,11 @@ public class Gun : MonoBehaviour
         curretAmmo = clipSize;
         currenSpred = defultSpred;
         gunShot = GetComponent<AudioSource>();
+        NetworkTransform nT = GetComponent<NetworkTransform>();
 
         UI = ammoText.gameObject.transform.parent.gameObject;
         UI.transform.parent = null;
+        UI.SetActive(nT.isOwner);
     }
 
     // Update is called once per frame
