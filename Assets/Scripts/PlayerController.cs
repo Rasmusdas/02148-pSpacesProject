@@ -28,6 +28,9 @@ public class PlayerController : MonoBehaviour
     public Material shieldMat;
     public Image privateHealthBar;
     public Image publicHealthBar;
+
+    [Header("Sound")]
+    public AudioSource hitSound;
     
     Material playerMat;
     MeshRenderer meshRenderer;
@@ -187,6 +190,7 @@ public class PlayerController : MonoBehaviour
     public void TakeDamge(int dmg)
     {
         NetworkServer.DamagePlayer(new Packet(PacketType.Health, NetworkServer.playerId, "Server", nT.id+"|" +dmg.ToString()));
+        hitSound.Play();
     }
 
     public void AddHealth(float health)
