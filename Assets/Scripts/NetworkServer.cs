@@ -11,7 +11,6 @@ using UnityEngine;
 public class NetworkServer
 {
     public static bool masterClient = false;
-
     private static SpaceRepository _repository;
     private static ISpace _serverSpace;
     private static ISpace _ownSpace;
@@ -25,6 +24,9 @@ public class NetworkServer
     private static Dictionary<int, string> networkObjectOwners = new();
     private static Dictionary<int, string> idToObjectType = new();
     private static Dictionary<string, GameObject> prefabs = new();
+    private static Dictionary<int, Vector3> _startPos = new();
+    private static int _playerSpawnCount;
+
     public static bool running;
 
     private static bool verbose = true;
@@ -37,7 +39,12 @@ public class NetworkServer
         _serverSpace = new SequentialSpace();
         _repository.AddSpace(info.space, _serverSpace);
 
-        if(verbose) Debug.Log("Server Started: " + info);
+        _startPos.Add(0, new Vector3(11, 1, 11));
+        _startPos.Add(1, new Vector3(-11, 1, 11));
+        _startPos.Add(2, new Vector3(11, 1, -11));
+        _startPos.Add(3, new Vector3(-11, 1, -11));
+
+        if (verbose) Debug.Log("Server Started: " + info);
 
         playerId = RandomString(16);
 
@@ -245,6 +252,8 @@ public class NetworkServer
                 _playerSpaces.Add((string)tuple[2],newPlayerSpace);
                 _serverSpace.Put((string)tuple[2],"Join");
 
+                _playerSpawnCount++;
+
                 foreach(var objs in networkObjectOwners)
                 {
                     SendPacket(new Packet(PacketType.Instantiate, objs.Value, "Server", objs.Key + "|" + objs.Value + "|" + idToObjectType[objs.Key]), (string)tuple[2]);
@@ -261,9 +270,17 @@ public class NetworkServer
                     idToObjectType.Add(_currentId, (string)tuple[2]);
                 }
 
-                BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + (string)tuple[2]));
+                if(((string)tuple[2]).Contains("Player"))
+                {
+                    BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + "Player" + "|" + NetworkPackager.Package(_startPos[_playerSpawnCount]) + "|" + NetworkPackager.Package(Quaternion.identity)));
+                    _playerSpawnCount = (_playerSpawnCount + 1) % 4;
+                }
+                else
+                {
+                    BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + (string)tuple[2]));
+                }
 
-
+                
             }
 
             if (tuple != null && (string)tuple[1] == "Movement")
