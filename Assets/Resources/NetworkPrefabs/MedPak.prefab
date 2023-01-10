@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4859037313750718441}
   - component: {fileID: 5788193654989635995}
   - component: {fileID: 9056122561086266047}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 7816226247380080654}
   - component: {fileID: 1241885406448877067}
   - component: {fileID: 3274297813104043467}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -178,7 +178,7 @@ GameObject:
   - component: {fileID: 3953666174919006955}
   - component: {fileID: 8834735654087338037}
   - component: {fileID: -3684726805982909896}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MedPak
   m_TagString: Untagged
   m_Icon: {fileID: 0}
