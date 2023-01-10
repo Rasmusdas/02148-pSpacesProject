@@ -272,7 +272,7 @@ public class NetworkServer
 
                 if(((string)tuple[2]).Contains("Player"))
                 {
-                    BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + "Player" + "|" + NetworkPackager.Package(_startPos[_playerSpawnCount]) + "|" + NetworkPackager.Package(Quaternion.identity)));
+                    BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + "NewPlayer" + "|" + NetworkPackager.Package(_startPos[_playerSpawnCount]) + "|" + NetworkPackager.Package(Quaternion.identity)));
                     _playerSpawnCount = (_playerSpawnCount + 1) % 4;
                 }
                 else
