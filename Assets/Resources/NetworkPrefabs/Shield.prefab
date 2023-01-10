@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6876783195879732196}
   - component: {fileID: 7042850937976463781}
   - component: {fileID: 3043190840418993410}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: -7774076626920745722}
   - component: {fileID: -1576294184635813944}
   - component: {fileID: -3059905253119839591}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Shield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -176,7 +176,7 @@ GameObject:
   - component: {fileID: 8937209953643857715}
   - component: {fileID: 2217938746499521120}
   - component: {fileID: 2928634148901371269}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}

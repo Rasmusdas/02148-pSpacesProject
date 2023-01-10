@@ -9,6 +9,7 @@ public class PowerUpSpawner : MonoBehaviour
     {
         StartCoroutine(MedPakSpawnTimer());
         StartCoroutine(ShieldSpawnTimer());
+        StartCoroutine(SpeedBoosterSpawnTimer());
     }
 
     IEnumerator MedPakSpawnTimer()
@@ -34,6 +35,19 @@ public class PowerUpSpawner : MonoBehaviour
             z = Random.Range(-50f, 50f);
             yield return new WaitForSeconds(time);
             if (NetworkServer.running) NetworkServer.Instantiate("Shield", new Vector3(x, 0f, z), Quaternion.identity);
+        }
+    }
+
+    IEnumerator SpeedBoosterSpawnTimer()
+    {
+        float time, x, z;
+        while (true)
+        {
+            time = Random.Range(5f, 10f);
+            x = Random.Range(-50f, 50f);
+            z = Random.Range(-50f, 50f);
+            yield return new WaitForSeconds(time);
+            if (NetworkServer.running) NetworkServer.Instantiate("SpeedBooster", new Vector3(x, 0.5f, z), Quaternion.Euler(90, 0, 0));
         }
     }
 }

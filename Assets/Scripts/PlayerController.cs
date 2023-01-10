@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     public float health = 10f;
     public float maxHealth = 10f;
     public float moveSpeed = 5f;
+    public float maxSpeed = 10f;
     public float sprintMult = 1.8f;
     public int shielded = 0;
     public float fireratePistol = 0.5f;
@@ -74,6 +75,7 @@ public class PlayerController : MonoBehaviour
 
         if (!nT.isOwner) return;
         GetInputs();
+        moveSpeed = Mathf.Min(maxSpeed, moveSpeed);
         Move();
 
         //if (Input.GetKeyDown(fireKey) && health > 0)
