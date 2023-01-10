@@ -47,8 +47,13 @@ public class NetworkServerUI : MonoBehaviour
             {
                 inServer = false;
                 NetworkServer.running = false;
-
+                NetworkServer.CloseServer(new ServerInfo("tcp", "0.0.0.0", 5555, "test", "KEEP"));
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+
+            if (GUI.Button(new Rect(5, 65, 150, 25), "Spawn Penguin"))
+            {
+                NetworkServer.Instantiate("NewPlayer", new Vector3(UnityEngine.Random.Range(-10, 10), 0, UnityEngine.Random.Range(-10, 10)), Quaternion.identity);
             }
         }
     }

@@ -60,9 +60,10 @@ public class NetworkTransform : MonoBehaviour
     public void UpdatePosition(Vector3 pos)
     {
         ticket++;
-        StartCoroutine(UpdatePositionInterpolation(pos));
-
-        Debug.Log("reeeeee");
+        if(Vector3.Distance(pos,transform.position) > 0.1f)
+        {
+            StartCoroutine(UpdatePositionInterpolation(pos));
+        }
     }
 
     private IEnumerator UpdatePositionInterpolation(Vector3 newPos)

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1511207708770247206}
   - component: {fileID: 1511207708770247207}
   - component: {fileID: 1511207708770247204}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -111,7 +111,7 @@ GameObject:
   - component: {fileID: 1511207710127842631}
   - component: {fileID: 7278574666445042405}
   - component: {fileID: -3815797334599422124}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -147,7 +147,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletSpeed: 50
-  damge: 2
+  damage: 2
   hitVFX: {fileID: 8112468338277511571, guid: 84284dcae74635449a228edb31220ff0, type: 3}
 --- !u!54 &1511207710127842631
 Rigidbody:
@@ -286,9 +286,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   updateRate: 1
-  syncTrans: 0
-  syncRot: 0
-  syncScale: 0
+  sync: 0
   id: 0
   t: 0
   register: 0

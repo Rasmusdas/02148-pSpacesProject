@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
     public float sprintMult = 1.8f;
     public int shielded = 0;
     public float fireratePistol = 0.5f;
-   // Animator anim;
+    Animator anim;
 
     [Header("KeyBinds")]
     public KeyCode sprintKey = KeyCode.LeftShift;
@@ -27,8 +27,9 @@ public class PlayerController : MonoBehaviour
     public ParticleSystem muzzleflashVFX;
     public GameObject death;
     public Material shieldMat;
-    public Image healthBar;
-
+    public Image privateHealthBar;
+    public Image publicHealthBar;
+    
     Material playerMat;
     MeshRenderer meshRenderer;
 
@@ -50,13 +51,15 @@ public class PlayerController : MonoBehaviour
         nT = GetComponent<NetworkTransform>();
         meshRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
         playerMat = meshRenderer.material;
-        //anim = GetComponent<Animator>();
+        TryGetComponent<Animator>(out anim);
         if (!nT.isOwner) return;
         characterController = GetComponent<CharacterController>();
         cam = Camera.main;
         cam.GetComponent<CamController>().player = gameObject;
         //gunShot = GetComponent<AudioSource>();
         
+        publicHealthBar.transform.parent.parent.gameObject.SetActive(!nT.isOwner);
+
     }
 
     // Update is called once per frame
@@ -64,7 +67,8 @@ public class PlayerController : MonoBehaviour
     {
         //playerMat.color = Color.Lerp(Color.red, Color.green, health / maxHealth);
 
-        healthBar.fillAmount = health / maxHealth;
+        privateHealthBar.fillAmount = health / maxHealth;
+        publicHealthBar.fillAmount = health / maxHealth;
 
         if (!nT.isOwner) return;
         GetInputs();
@@ -110,6 +114,7 @@ public class PlayerController : MonoBehaviour
             Vector3 lookAtPoint = camRay.GetPoint(rayLenght);
             lookAtPoint.y = transform.position.y;
             transform.LookAt(lookAtPoint);
+            gunTip.transform.LookAt(lookAtPoint + new Vector3(0,1,0));
         }
     }
 
@@ -124,7 +129,7 @@ public class PlayerController : MonoBehaviour
         if (movement != Vector3.zero)
         {
 
-           // anim.SetBool("Move", true);
+            anim?.SetBool("Move", true);
             if (isSprinting)
             {
                 movement *= moveSpeed * sprintMult;
@@ -137,7 +142,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            //anim.SetBool("Move", false);
+            anim?.SetBool("Move", false);
         }
 
         movement = new Vector3(movement.x, -3, movement.z);
@@ -177,16 +182,7 @@ public class PlayerController : MonoBehaviour
 
         if (health <= 0)
         {
-
-            GameObject obj = Instantiate(death, transform.position, transform.rotation);
-
-            foreach (var v in obj.GetComponentsInChildren<Rigidbody>())
-            {
-                v.AddExplosionForce(50, transform.position + Vector3.up, 1, 1, ForceMode.Impulse);
-            }
-
-            transform.position = new Vector3(0, health > 0 ? -10 : 0, 0);
-            
+            transform.position = new Vector3(0, health > 0 ? -10 : 0, 0);   
         }
     }
 
