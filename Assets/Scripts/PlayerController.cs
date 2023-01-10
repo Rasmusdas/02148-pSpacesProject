@@ -193,7 +193,8 @@ public class PlayerController : MonoBehaviour
 
         if (health <= 0)
         {
-            transform.position = new Vector3(0,-3, 0);   
+            transform.position = new Vector3(0,-3, 0);
+            gun.GetUI().SetActive(false);
             gun.enabled = false;
         }
     }

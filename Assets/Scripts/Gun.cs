@@ -171,4 +171,6 @@ public class Gun : MonoBehaviour
     public float GetReloadTimeLeft() { return reloadTimeLeft; }
 
     public void SetCanShoot(bool b) { canShoot = b; }
+
+    public GameObject GetUI() { return UI; }
 }
