@@ -578,7 +578,7 @@ GameObject:
   - component: {fileID: 8849961335651673364}
   - component: {fileID: 4974649223564911111}
   m_Layer: 0
-  m_Name: HitSound
+  m_Name: IsHitSound
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -609,7 +609,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: dca7c8d9afb123348bfec69fac075a40, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 582f7c0c72dd80b49b68f73139f34eb3, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.5
   m_Pitch: 1

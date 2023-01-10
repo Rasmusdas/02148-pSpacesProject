@@ -10,7 +10,9 @@ public class BulletController : MonoBehaviour
 
     [Header("VFX")]
     public GameObject hitVFX;
-    
+
+    AudioSource hitSound;
+
     Rigidbody rb;
 
     NetworkTransform nt;
@@ -19,6 +21,7 @@ public class BulletController : MonoBehaviour
     void Start()
     {
         nt = GetComponent<NetworkTransform>();
+        hitSound = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody>();
         rb.velocity = transform.forward * bulletSpeed;
         Destroy(gameObject, 2f);
@@ -40,6 +43,7 @@ public class BulletController : MonoBehaviour
                 if(nt.isOwner)
                 {
                     collision.gameObject.GetComponent<PlayerController>().TakeDamge(damage);
+                    hitSound.Play();
                 }
                 Destroy(gameObject);
             }
