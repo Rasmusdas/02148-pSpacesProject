@@ -609,7 +609,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2908538121797143580}
   - component: {fileID: 2796252766331953711}
-  - component: {fileID: 7057836107590748494}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Player
@@ -707,20 +706,6 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.07014966, y: 1.131818, z: 0.40447724}
     m_Extent: {x: 1.8889723, y: 2.3421743, z: 1.5091832}
   m_DirtyAABB: 0
---- !u!136 &7057836107590748494
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3335750155372037484}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.012
-  m_Height: 0.05222445
-  m_Direction: 1
-  m_Center: {x: 0.0023888387, y: 0.016582964, z: 0.0033}
 --- !u!1 &3513862038662051801
 GameObject:
   m_ObjectHideFlags: 0
@@ -1144,6 +1129,7 @@ GameObject:
   - component: {fileID: -2477119129862121940}
   - component: {fileID: -2763026488790560002}
   - component: {fileID: 5343407717514452096}
+  - component: {fileID: 1218493663334964948}
   m_Layer: 0
   m_Name: NewPlayer
   m_TagString: Player
@@ -1381,6 +1367,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!136 &1218493663334964948
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6005379661290547115}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 1.1
+  m_Height: 5.1302605
+  m_Direction: 1
+  m_Center: {x: 0, y: 1.3351257, z: 0.2}
 --- !u!1 &6283890977650605885
 GameObject:
   m_ObjectHideFlags: 0
