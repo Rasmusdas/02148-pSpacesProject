@@ -32,8 +32,23 @@ public class NetworkServer
 
     private static bool verbose = true;
 
+    private static void Init()
+    {
+        _startPos = new();
+        prefabs = new();
+        idToObjectType = new();
+        networkObjectOwners = new();
+        networkObjects = new();
+        _playerSpaces = new();
+        _playerIds = new();
+        _updates = new();
+        _playerSpawnCount = 0;
+        _currentId = 0;
+    }
+
     public static void StartServer(ServerInfo info)
     {
+        Init();
         masterClient = true;
         _repository = new SpaceRepository();
         _repository.AddGate(string.Format("{0}://{1}:{2}?{3}", info.protocol, info.ip, info.port, info.connectionType));
@@ -72,6 +87,7 @@ public class NetworkServer
     }
     public static void JoinServer(ServerInfo info)
     {
+        Init();
         masterClient = false;
 
         _serverSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, info.space, info.connectionType));
@@ -268,7 +284,7 @@ public class NetworkServer
 
                 foreach(var objs in networkObjectOwners)
                 {
-                    SendPacket(new Packet(PacketType.Instantiate, objs.Value, "Server", objs.Key + "|" + objs.Value + "|" + idToObjectType[objs.Key]), ((string)tuple[2]).Replace(".", ","));
+                    SendPacket(new Packet(PacketType.Instantiate, objs.Value, "Server", objs.Key + "|" + objs.Value + "|" + idToObjectType[objs.Key] + "|" +NetworkPackager.Package(Vector3.zero) + "|" + NetworkPackager.Package(Quaternion.identity)), (string)tuple[2]);
                 }
 
                 continue;
@@ -280,7 +296,7 @@ public class NetworkServer
                 {
                     networkObjectOwners.Add(_currentId, (string)tuple[0]);
                     idToObjectType.Add(_currentId, "NewPlayer");
-                    BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + "NewPlayer" + "|" + NetworkPackager.Package(_startPos[_playerSpawnCount]) + "|" + NetworkPackager.Package(Quaternion.identity)));
+                    BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + "NewPlayer" + "|" + NetworkPackager.Package(_startPos[_playerSpawnCount]) + "|" + NetworkPackager.Package(Quaternion.identity)));                   
                     _playerSpawnCount = (_playerSpawnCount + 1) % 4;
                 }
                 else
