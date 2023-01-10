@@ -609,9 +609,10 @@ GameObject:
   m_Component:
   - component: {fileID: 2908538121797143580}
   - component: {fileID: 2796252766331953711}
+  - component: {fileID: 7057836107590748494}
   m_Layer: 0
   m_Name: Sphere
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -706,6 +707,20 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.07014966, y: 1.131818, z: 0.40447724}
     m_Extent: {x: 1.8889723, y: 2.3421743, z: 1.5091832}
   m_DirtyAABB: 0
+--- !u!136 &7057836107590748494
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3335750155372037484}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.012
+  m_Height: 0.05222445
+  m_Direction: 1
+  m_Center: {x: 0.0023888387, y: 0.016582964, z: 0.0033}
 --- !u!1 &3513862038662051801
 GameObject:
   m_ObjectHideFlags: 0
@@ -1131,7 +1146,7 @@ GameObject:
   - component: {fileID: 5343407717514452096}
   m_Layer: 0
   m_Name: NewPlayer
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6634,7 +6649,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7449315943912621555}
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: -15.623142}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.6666665, y: 1.6666665, z: 1.6666665}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6644,7 +6659,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 7.0411234, y: 4.0474796}
+  m_AnchoredPosition: {x: 0, y: 4}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &8624750569468770474
