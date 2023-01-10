@@ -173,6 +173,11 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
+
+        if(dmg > 0)
+        {
+            hitSound.Play();
+        }
         
         if(health - dmg > maxHealth)
         {
@@ -185,14 +190,14 @@ public class PlayerController : MonoBehaviour
 
         if (health <= 0)
         {
-            transform.position = new Vector3(0, health > 0 ? -10 : 0, 0);   
+            transform.position = new Vector3(0,-5, 0);   
         }
     }
 
     public void TakeDamge(int dmg)
     {
         NetworkServer.DamagePlayer(new Packet(PacketType.Health, NetworkServer.playerId, "Server", nT.id+"|" +dmg.ToString()));
-        hitSound.Play();
+
     }
 
     public void AddHealth(float health)
