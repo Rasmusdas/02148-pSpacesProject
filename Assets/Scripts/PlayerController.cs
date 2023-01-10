@@ -48,10 +48,13 @@ public class PlayerController : MonoBehaviour
 
     Camera cam;
 
+    Gun gun;
+
     // Start is called before the first frame update
     void Start()
     {
         nT = GetComponent<NetworkTransform>();
+        gun = GetComponent<Gun>();
         meshRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
         playerMat = meshRenderer.material;
         TryGetComponent<Animator>(out anim);
@@ -191,6 +194,7 @@ public class PlayerController : MonoBehaviour
         if (health <= 0)
         {
             transform.position = new Vector3(0,-3, 0);   
+            gun.enabled = false;
         }
     }
 
