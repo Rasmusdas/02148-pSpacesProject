@@ -26,8 +26,9 @@ public class PlayerController : MonoBehaviour
     public ParticleSystem muzzleflashVFX;
     public GameObject death;
     public Material shieldMat;
-    public Image healthBar;
-
+    public Image privateHealthBar;
+    public Image publicHealthBar;
+    
     Material playerMat;
     MeshRenderer meshRenderer;
 
@@ -56,6 +57,9 @@ public class PlayerController : MonoBehaviour
         cam.GetComponent<CamController>().player = gameObject;
         //gunShot = GetComponent<AudioSource>();
         
+        privateHealthBar.transform.parent.parent.gameObject.SetActive(nT.isOwner);
+        publicHealthBar.transform.parent.parent.gameObject.SetActive(!nT.isOwner);
+
     }
 
     // Update is called once per frame
@@ -63,7 +67,8 @@ public class PlayerController : MonoBehaviour
     {
         //playerMat.color = Color.Lerp(Color.red, Color.green, health / maxHealth);
 
-        healthBar.fillAmount = health / maxHealth;
+        privateHealthBar.fillAmount = health / maxHealth;
+        publicHealthBar.fillAmount = health / maxHealth;
 
         if (!nT.isOwner) return;
         GetInputs();

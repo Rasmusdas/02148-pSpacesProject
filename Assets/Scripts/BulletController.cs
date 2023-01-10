@@ -46,7 +46,10 @@ public class BulletController : MonoBehaviour
         }
         else
         {
-            Instantiate(hitVFX, collision.contacts[0].point, Quaternion.Euler(collision.contacts[0].normal));
+            GameObject obj = Instantiate(hitVFX, collision.contacts[0].point, Quaternion.Euler(collision.contacts[0].normal));
+            ParticleSystem ps = obj.GetComponent<ParticleSystem>();
+            ps.startColor = Color.blue;
+            ps.startLifetime /= 2;
             Destroy(gameObject);
         }
 
