@@ -1218,13 +1218,13 @@ MonoBehaviour:
   muzzelPoint: {fileID: 94180303172122206}
   bulletSpeed: 10
   damage: 2
-  clipSize: 100
+  clipSize: 10
   range: 2
-  fireRate: 0.1
+  fireRate: 0.6
   reloadSpeed: 1
   defultSpred: 5
-  autoFire: 1
-  bulletsAtOnes: 3
+  autoFire: 0
+  bulletsAtOnes: 1
   muzzleFlash: {fileID: 6887707155540854618}
   ammoText: {fileID: 2732759991340384549}
   reloadImage: {fileID: 916625522167121176}

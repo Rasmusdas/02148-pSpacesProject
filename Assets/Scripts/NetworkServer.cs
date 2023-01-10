@@ -191,22 +191,19 @@ public class NetworkServer
                         string prefabName = splitData[2];
                         string prefabPos = splitData[3];
                         string prefabRot = splitData[4];
-                        GameObject gb = GBHelper.Instantiate(prefabs[prefabName]);
+                        GameObject gb = GBHelper.Instantiate(prefabs[prefabName], NetworkPackager.UnpackageVector3(prefabPos), NetworkPackager.UnpackgeQuaternion(prefabRot));
 
                         gb.GetComponent<NetworkTransform>().id = objId;
                         gb.GetComponent<NetworkTransform>().owner = id;
 
-                        gb.transform.position = NetworkPackager.UnpackageVector3(prefabPos);
-                        gb.transform.rotation = NetworkPackager.UnpackgeQuaternion(prefabRot);
-
                         if(prefabName != "Bullet")
                         {
                             networkObjects.Add(objId, gb.GetComponent<NetworkTransform>());
+                        }
 
-                            if (id == playerId)
-                            {
-                                gb.GetComponent<NetworkTransform>().isOwner = true;
-                            }
+                        if (id == playerId)
+                        {
+                            gb.GetComponent<NetworkTransform>().isOwner = true;
                         }
                     });
 
