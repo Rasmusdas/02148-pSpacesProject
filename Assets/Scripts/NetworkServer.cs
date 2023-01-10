@@ -98,6 +98,14 @@ public class NetworkServer
         GBHelper.Start(HandleUpdates());
     }
 
+    public static void CloseServer(ServerInfo info)
+    {
+        if(masterClient)
+        {
+            _repository.CloseGate(string.Format("{0}://{1}:{2}?{3}", info.protocol, info.ip, info.port, info.connectionType));
+        }
+    }
+
     private static void LoadResources()
     {
         var objs = Resources.LoadAll("NetworkPrefabs",typeof(GameObject));

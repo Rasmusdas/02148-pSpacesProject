@@ -180,16 +180,7 @@ public class PlayerController : MonoBehaviour
 
         if (health <= 0)
         {
-
-            GameObject obj = Instantiate(death, transform.position, transform.rotation);
-
-            foreach (var v in obj.GetComponentsInChildren<Rigidbody>())
-            {
-                v.AddExplosionForce(50, transform.position + Vector3.up, 1, 1, ForceMode.Impulse);
-            }
-
-            transform.position = new Vector3(0, health > 0 ? -10 : 0, 0);
-            
+            transform.position = new Vector3(0, health > 0 ? -10 : 0, 0);   
         }
     }
 

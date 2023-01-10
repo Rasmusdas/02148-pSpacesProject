@@ -47,7 +47,7 @@ public class NetworkServerUI : MonoBehaviour
             {
                 inServer = false;
                 NetworkServer.running = false;
-
+                NetworkServer.CloseServer(new ServerInfo("tcp", "0.0.0.0", 5555, "test", "KEEP"));
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
 
