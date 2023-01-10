@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using UnityEngine;
 
@@ -173,6 +174,11 @@ public class NetworkServer
                 string type = (string)tuple[0];
                 string data = (string)tuple[1];
 
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    data = data.Replace(",",".");
+                }
+
                 if (verbose) Debug.Log("Client: Received Packet of Type " + (string)tuple[0]);
 
                 if (type == "Movement")
@@ -192,6 +198,8 @@ public class NetworkServer
                 if (type == "Instantiate")
                 {
                     string[] splitData = data.Split("|");
+
+                    Debug.LogError("Data: " + data);
 
                     _updates.Enqueue(() => {
                         int objId = int.Parse(splitData[0]);
@@ -257,45 +265,45 @@ public class NetworkServer
                 _playerSpaces.Add((string)tuple[2],newPlayerSpace);
                 _serverSpace.Put((string)tuple[2],"Join");
 
-                _playerSpawnCount++;
 
                 foreach(var objs in networkObjectOwners)
                 {
-                    SendPacket(new Packet(PacketType.Instantiate, objs.Value, "Server", objs.Key + "|" + objs.Value + "|" + idToObjectType[objs.Key]), (string)tuple[2]);
+                    SendPacket(new Packet(PacketType.Instantiate, objs.Value, "Server", objs.Key + "|" + objs.Value + "|" + idToObjectType[objs.Key]), ((string)tuple[2]).Replace(".", ","));
                 }
 
                 continue;
             }
-
+            
             if (tuple != null && (string)tuple[1] == "Instantiate")
             {
-                if(!((string)tuple[2]).Contains("Bullet"))
+                if (((string)tuple[2]).Contains("Player"))
                 {
                     networkObjectOwners.Add(_currentId, (string)tuple[0]);
-                    idToObjectType.Add(_currentId, (string)tuple[2]);
-                }
-
-                if(((string)tuple[2]).Contains("Player"))
-                {
+                    idToObjectType.Add(_currentId, "NewPlayer");
                     BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + "NewPlayer" + "|" + NetworkPackager.Package(_startPos[_playerSpawnCount]) + "|" + NetworkPackager.Package(Quaternion.identity)));
                     _playerSpawnCount = (_playerSpawnCount + 1) % 4;
                 }
                 else
                 {
-                    BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + (string)tuple[2]));
-                }
+                    if (!((string)tuple[2]).Contains("Bullet"))
+                    {
+                        networkObjectOwners.Add(_currentId, (string)tuple[0]);
+                        idToObjectType.Add(_currentId, (string)tuple[2]);
+                    }
 
+                    BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + ((string)tuple[2]).Replace(".", ",")));
+                }
                 
             }
 
             if (tuple != null && (string)tuple[1] == "Movement")
             {
-                BroadcastPacket(new Packet(PacketType.Movement, (string)tuple[0], "Server", (string)tuple[2]));
+                BroadcastPacket(new Packet(PacketType.Movement, (string)tuple[0], "Server", ((string)tuple[2]).Replace(".", ",")));
             }
 
             if (tuple != null && (string)tuple[1] == "Health")
             {
-                BroadcastPacket(new Packet(PacketType.Health, "All", "Server", (string)tuple[2]));
+                BroadcastPacket(new Packet(PacketType.Health, "All", "Server", ((string)tuple[2]).Replace(".", ",")));
             }
         }
     }
