@@ -50,6 +50,11 @@ public class NetworkServerUI : MonoBehaviour
 
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
+
+            if (GUI.Button(new Rect(5, 65, 150, 25), "Spawn Penguin"))
+            {
+                NetworkServer.Instantiate("NewPlayer", new Vector3(UnityEngine.Random.Range(-10, 10), 0, UnityEngine.Random.Range(-10, 10)), Quaternion.identity);
+            }
         }
     }
 }
