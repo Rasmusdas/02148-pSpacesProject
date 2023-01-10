@@ -41,6 +41,7 @@ public class Gun : MonoBehaviour
     float currenSpred;
 
     bool canShoot = true;
+    bool canReload = true;
     bool isReloading = false;
 
     AudioSource gunShot;
@@ -74,8 +75,10 @@ public class Gun : MonoBehaviour
             }
         }
 
-        Reload();
-
+        if (canReload)
+        {
+            Reload();
+        }
 
         ammoText.text = curretAmmo + " / " + clipSize;
         if (isReloading) 
@@ -106,10 +109,12 @@ public class Gun : MonoBehaviour
     IEnumerator ReloadTime(float reloadSpeed)
     {
         canShoot = false;
+        canReload = false;
         isReloading = true;
         yield return new WaitForSeconds(reloadSpeed);
         curretAmmo = clipSize;
         isReloading = false;
+        canReload = true;
         canShoot = true;
     }
 
@@ -134,22 +139,28 @@ public class Gun : MonoBehaviour
         gunShot.Stop();
         for (int i = 0; i < bulletsAtOnes; i++)
         {
-            float ofset = UnityEngine.Random.Range(-currenSpred / 2, currenSpred / 2);
-            Quaternion muzzelRot = Quaternion.Euler(muzzelPoint.rotation.eulerAngles.x, muzzelPoint.rotation.eulerAngles.y + ofset, muzzelPoint.rotation.eulerAngles.z);
-            NetworkServer.Instantiate("Bullet", muzzelPoint.position, muzzelRot);
+            if (curretAmmo > 0)
+            {
+                float ofset = UnityEngine.Random.Range(-currenSpred / 2, currenSpred / 2);
+                Quaternion muzzelRot = Quaternion.Euler(muzzelPoint.rotation.eulerAngles.x, muzzelPoint.rotation.eulerAngles.y + ofset, muzzelPoint.rotation.eulerAngles.z);
+                NetworkServer.Instantiate("Bullet", muzzelPoint.position, muzzelRot);
+
+                curretAmmo--;
+            }
         }
         muzzleFlash.Play();
         gunShot.Play();
-
-        curretAmmo -= bulletsAtOnes;
+        
         StartCoroutine(Firerate(fireRate));
     }
 
     IEnumerator Firerate(float firerate)
     {
         canShoot = false;
+        canReload = false;
         yield return new WaitForSeconds(firerate);
         canShoot = true;
+        canReload = true;
     }
 
     public int GetCurretAmmo() { return curretAmmo; }
