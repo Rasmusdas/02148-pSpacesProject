@@ -215,8 +215,6 @@ public class NetworkServer
                 {
                     string[] splitData = data.Split("|");
 
-                    Debug.LogError("Data: " + data);
-
                     _updates.Enqueue(() => {
                         int objId = int.Parse(splitData[0]);
                         string id = splitData[1];
