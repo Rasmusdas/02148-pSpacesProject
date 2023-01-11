@@ -15,10 +15,9 @@ public class PUSpawnPoint : MonoBehaviour
     IEnumerator Spawner()
     {
         int r;
-        yield return new WaitForSeconds(4);
         while (!live)
         {
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(2);
             if (NetworkServer.masterClient && NetworkServer.running)
             {
                 r = Random.Range(1, 101);
@@ -38,7 +37,7 @@ public class PUSpawnPoint : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.tag == "Player" && live)
+        if (other.tag == "Player" && live && NetworkServer.masterClient)
         {
             live = false;
             StartCoroutine(Spawner());
