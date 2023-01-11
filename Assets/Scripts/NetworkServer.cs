@@ -30,7 +30,7 @@ public class NetworkServer
 
     public static bool running;
 
-    private static bool verbose = true;
+    private static bool verbose = false;
 
     private static void Init()
     {
@@ -339,7 +339,6 @@ public class NetworkServer
         {
             while (_updates.Count > 0)
             {
-                Debug.Log("Executing Update");
                 _updates.Dequeue()();
             }
 
