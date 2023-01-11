@@ -44,8 +44,8 @@ public class BulletController : MonoBehaviour
                 {
                     collision.gameObject.GetComponent<PlayerController>().TakeDamge(damage);
                     //hitSound.Play();
-                    NetworkServer.Instantiate("Hit", collision.contacts[0].point, Quaternion.identity);
-                    NetworkServer.Instantiate("BloodSplat", collision.contacts[0].point, transform.rotation);
+                    Instantiate(hitVFX, collision.contacts[0].point, Quaternion.identity);
+                    Instantiate(bloodVFX, collision.contacts[0].point, transform.rotation);
                 }
                 Destroy(gameObject);
             }
