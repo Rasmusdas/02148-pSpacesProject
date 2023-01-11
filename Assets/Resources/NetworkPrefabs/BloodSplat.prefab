@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3361717812988189512}
   - component: {fileID: 1128329626701358214}
   - component: {fileID: 989246460054282815}
+  - component: {fileID: -1390670579747339131}
   m_Layer: 9
   m_Name: BloodSplat
   m_TagString: Untagged
@@ -4884,3 +4885,24 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!114 &-1390670579747339131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3361717812988189515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b382b8c95e2cdc4b895f266e8ed7702, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updateRate: 0
+  sync: 0
+  id: 0
+  t: 0
+  register: 0
+  moveDelta: 0.3
+  isOwner: 0
+  owner: 
+  dampening: 0
