@@ -40,15 +40,16 @@ public class BulletController : MonoBehaviour
         {
             if(collision.gameObject.GetComponent<NetworkTransform>().owner != nt.owner)
             {
-                NetworkServer.Instantiate("Hit", collision.contacts[0].point, Quaternion.identity);
-                if(nt.isOwner)
+                if (nt.isOwner)
                 {
                     collision.gameObject.GetComponent<PlayerController>().TakeDamge(damage);
                     //hitSound.Play();
+                    NetworkServer.Instantiate("Hit", collision.contacts[0].point, Quaternion.identity);
+                    NetworkServer.Instantiate("BloodSplat", collision.contacts[0].point, transform.rotation);
                 }
                 Destroy(gameObject);
             }
-            NetworkServer.Instantiate("BloodSplat", collision.contacts[0].point, transform.rotation);
+            
         }
         else
         {
