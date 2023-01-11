@@ -10,6 +10,7 @@ public class BulletController : MonoBehaviour
 
     [Header("VFX")]
     public GameObject hitVFX;
+    public GameObject bloodVFX;
 
     AudioSource hitSound;
 
@@ -39,7 +40,8 @@ public class BulletController : MonoBehaviour
         {
             if(collision.gameObject.GetComponent<NetworkTransform>().owner != nt.owner)
             {
-                Instantiate(hitVFX, collision.contacts[0].point, Quaternion.Euler(collision.contacts[0].normal));
+                Instantiate(hitVFX, collision.contacts[0].point, Quaternion.identity);
+                Instantiate(bloodVFX, collision.contacts[0].point, transform.rotation);
                 if(nt.isOwner)
                 {
                     collision.gameObject.GetComponent<PlayerController>().TakeDamge(damage);

@@ -150,6 +150,7 @@ MonoBehaviour:
   bulletSpeed: 50
   damage: 2
   hitVFX: {fileID: 8112468338277511571, guid: 84284dcae74635449a228edb31220ff0, type: 3}
+  bloodVFX: {fileID: 3361717812988189515, guid: 48feefeda99eac54fa4f678f53461484, type: 3}
 --- !u!54 &1511207710127842631
 Rigidbody:
   m_ObjectHideFlags: 0
