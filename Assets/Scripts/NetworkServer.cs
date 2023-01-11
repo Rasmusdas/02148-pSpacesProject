@@ -98,13 +98,19 @@ public class NetworkServer
 
         _serverSpace.Put("Server", "Join", playerId);
 
-        if(verbose) Debug.Log("Connected to server: " + info);
+        if (verbose) Debug.Log("Connected to server: " + info);
 
-        _serverSpace.Get(playerId, "Join");
+        ITuple tuple = _serverSpace.Get(playerId, "Join", typeof(string));
+
+        if ((string)tuple[2] == "Denied")
+        {
+            Debug.Log("Server was full");
+            return;
+        }
 
         _ownSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
-        if(verbose) Debug.Log("Connected to private space " + string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
+        if (verbose) Debug.Log("Connected to private space " + string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
         LoadResources();
 
@@ -271,21 +277,26 @@ public class NetworkServer
             {
                 Debug.Log("Player " + tuple[2] + " Joined");
 
+                if(_playerJoinCount >= _maxPlayerCount)
+                {
+                    _serverSpace.Put((string)tuple[2], "Join", "Denied");
+                }
+
+                _playerJoinCount++;
+
                 _playerIds.Add((string)tuple[2]);
 
                 ISpace newPlayerSpace = new SequentialSpace();
 
-                _repository.AddSpace((string)tuple[2],newPlayerSpace);
-                _playerSpaces.Add((string)tuple[2],newPlayerSpace);
-                _serverSpace.Put((string)tuple[2],"Join");
+                _repository.AddSpace((string)tuple[2], newPlayerSpace);
+                _playerSpaces.Add((string)tuple[2], newPlayerSpace);
+                _serverSpace.Put((string)tuple[2], "Join", "Accepted");
 
 
-                foreach(var objs in networkObjectOwners)
+                foreach (var objs in networkObjectOwners)
                 {
-                    SendPacket(new Packet(PacketType.Instantiate, objs.Value, "Server", objs.Key + "|" + objs.Value + "|" + idToObjectType[objs.Key] + "|" +NetworkPackager.Package(Vector3.zero) + "|" + NetworkPackager.Package(Quaternion.identity)), (string)tuple[2]);
+                    SendPacket(new Packet(PacketType.Instantiate, objs.Value, "Server", objs.Key + "|" + objs.Value + "|" + idToObjectType[objs.Key] + "|" + NetworkPackager.Package(Vector3.zero) + "|" + NetworkPackager.Package(Quaternion.identity)), (string)tuple[2]);
                 }
-
-                continue;
             }
             
             if (tuple != null && (string)tuple[1] == "Instantiate")
@@ -337,6 +348,8 @@ public class NetworkServer
     }
 
     private static System.Random random = new System.Random();
+    private static int _playerJoinCount;
+    private static int _maxPlayerCount;
 
     public static string RandomString(int length)
     {
