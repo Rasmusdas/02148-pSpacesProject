@@ -146,7 +146,7 @@ public class Gun : MonoBehaviour
             {
                 float ofset = UnityEngine.Random.Range(-currenSpred / 2, currenSpred / 2);
                 Quaternion muzzelRot = Quaternion.Euler(muzzelPoint.rotation.eulerAngles.x, muzzelPoint.rotation.eulerAngles.y + ofset, muzzelPoint.rotation.eulerAngles.z);
-                NetworkServer.Instantiate("Bullet", muzzelPoint.position, muzzelRot);
+                NetworkServer.Instantiate(bullet.name, muzzelPoint.position, muzzelRot);
 
                 curretAmmo--;
             }

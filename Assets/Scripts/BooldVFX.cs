@@ -50,7 +50,6 @@ public class BooldVFX : MonoBehaviour
             //Quaternion rot = Quaternion.Euler(collisionEvents[i].normal);
             GameObject temp = Instantiate(gb, pos, Quaternion.identity);
             temp.transform.up = collisionEvents[i].normal;
-            Debug.Log(pos + "|" + collisionEvents[i].normal);
         }
 
     }
