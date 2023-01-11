@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class BulletController : MonoBehaviour
 {
@@ -63,8 +64,12 @@ public class BulletController : MonoBehaviour
                         var em = ps.emission;
                         em.burstCount *= 2;
 
-                        item.collider.gameObject.GetComponent<PlayerController>().TakeDamge(damage);
-                        //hitSound.Play();
+                        PlayerController pc = item.collider.gameObject.GetComponent<PlayerController>();
+                        if (pc.shielded == 0)
+                        {
+                            pc.TakeDamge(damage);
+                            //hitSound.Play();
+                        }
                     }
                 }
                
@@ -81,8 +86,12 @@ public class BulletController : MonoBehaviour
                 {
                     if (nt.isOwner)
                     {
-                        collision.gameObject.GetComponent<PlayerController>().TakeDamge(damage);
-                        //hitSound.Play();
+                        PlayerController pc = collision.gameObject.GetComponent<PlayerController>();
+                        if (pc.shielded == 0)
+                        {
+                            pc.TakeDamge(damage);
+                            //hitSound.Play();
+                        }
                     }
                     Destroy(gameObject);
                 }
