@@ -106,9 +106,9 @@ public class NetworkServer
 
         if (verbose) Debug.Log("Connected to server: " + info);
 
-        ITuple tuple = _serverSpace.Get(playerId, "Join", typeof(string));
+        ITuple tuple = _serverSpace.Get(playerId, "Join", typeof(int));
 
-        if ((string)tuple[2] == "Denied")
+        if ((int)tuple[2] == 0)
         {
             Debug.Log("Server was full");
             return false;
@@ -275,7 +275,7 @@ public class NetworkServer
 
         while(running)
         {
-            ITuple tuple = _serverSpace.GetP("Server", typeof(string), typeof(string));
+            ITuple tuple = _serverSpace.GetP(typeof(string), typeof(string), typeof(string));
 
             if (tuple == null) continue;
 
@@ -287,7 +287,8 @@ public class NetworkServer
 
                 if(_playerJoinCount >= _maxPlayerCount)
                 {
-                    _serverSpace.Put((string)tuple[2], "Join", "Denied");
+                    _serverSpace.Put((string)tuple[2], "Join", 0);
+                    Debug.Log("Player " + tuple[2] + " was denied because server is too full");
                     continue;
                 }
 
@@ -299,7 +300,7 @@ public class NetworkServer
 
                 _repository.AddSpace((string)tuple[2], newPlayerSpace);
                 _playerSpaces.Add((string)tuple[2], newPlayerSpace);
-                _serverSpace.Put((string)tuple[2], "Join", "Accepted");
+                _serverSpace.Put((string)tuple[2], "Join", 1);
 
 
                 foreach (var objs in networkObjectOwners)
