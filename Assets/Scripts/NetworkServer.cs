@@ -54,6 +54,7 @@ public class NetworkServer
     {
         Init();
         masterClient = true;
+        running = true;
         _repository = new SpaceRepository();
         _repository.AddGate(string.Format("{0}://{1}:{2}?{3}", info.protocol, info.ip, info.port, info.connectionType));
         _serverSpace = new SequentialSpace();
@@ -95,7 +96,6 @@ public class NetworkServer
     {
         Init();
         masterClient = false;
-
         _serverSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, info.space, info.connectionType));
 
         playerId = RandomString(16);
@@ -113,6 +113,8 @@ public class NetworkServer
             Debug.Log("Server was full");
             return false;
         }
+
+        running = true;
 
         _ownSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
