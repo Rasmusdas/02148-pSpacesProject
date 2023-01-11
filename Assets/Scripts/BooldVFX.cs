@@ -48,8 +48,12 @@ public class BooldVFX : MonoBehaviour
             // You can simply use "other" GameObject to access it's rigidbody to apply force, or check if it implements a class that takes damage or whatever
             Vector3 pos = collisionEvents[i].intersection;
             //Quaternion rot = Quaternion.Euler(collisionEvents[i].normal);
-            GameObject temp = Instantiate(gb, pos, Quaternion.identity);
-            temp.transform.up = collisionEvents[i].normal;
+            //GameObject temp = Instantiate(gb, pos, Quaternion.identity);
+            Quaternion rot = Quaternion.identity;
+
+            rot.SetLookRotation(-collisionEvents[i].normal);
+            float size = Random.Range(0.05f, 0.2f);
+            BloodVFXRenderer.Instance.Add(pos,rot, new Vector3(size, size, size));
         }
 
     }

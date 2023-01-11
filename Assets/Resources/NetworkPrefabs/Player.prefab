@@ -336,6 +336,7 @@ MonoBehaviour:
   health: 10
   maxHealth: 10
   moveSpeed: 5
+  maxSpeed: 10
   sprintMult: 1.8
   shielded: 0
   fireratePistol: 0.5
@@ -345,6 +346,7 @@ MonoBehaviour:
   shieldMat: {fileID: 2100000, guid: 7318f289bc2453b4d8975fe483fb74c8, type: 2}
   privateHealthBar: {fileID: 8565082959328110803}
   publicHealthBar: {fileID: 6501963877215888770}
+  hitSound: {fileID: 0}
 --- !u!114 &2395551982905887798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -382,12 +384,12 @@ MonoBehaviour:
   muzzelPoint: {fileID: 7570114426635061122}
   bulletSpeed: 10
   damage: 2
-  clipSize: 10
+  clipSize: 100
   range: 2
-  fireRate: 0.6
+  fireRate: 0.1
   reloadSpeed: 1
   defultSpred: 5
-  autoFire: 0
+  autoFire: 1
   bulletsAtOnes: 1
   muzzleFlash: {fileID: 733199344083996511}
   ammoText: {fileID: 8860968598114135065}
