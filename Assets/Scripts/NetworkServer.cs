@@ -28,6 +28,10 @@ public class NetworkServer
     private static Dictionary<int, Vector3> _startPos = new();
     private static int _playerSpawnCount;
 
+    private static System.Random random = new System.Random();
+    private static int _playerJoinCount;
+    private static int _maxPlayerCount = 4;
+
     public static bool running;
 
     private static bool verbose = false;
@@ -64,6 +68,8 @@ public class NetworkServer
 
         playerId = RandomString(16);
 
+        _playerJoinCount++;
+
         _ownSpace = new SequentialSpace();
 
         _repository.AddSpace(playerId, _ownSpace);
@@ -85,7 +91,7 @@ public class NetworkServer
 
         
     }
-    public static void JoinServer(ServerInfo info)
+    public static bool JoinServer(ServerInfo info)
     {
         Init();
         masterClient = false;
@@ -105,7 +111,7 @@ public class NetworkServer
         if ((string)tuple[2] == "Denied")
         {
             Debug.Log("Server was full");
-            return;
+            return false;
         }
 
         _ownSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
@@ -119,6 +125,8 @@ public class NetworkServer
         clientThread.Start();
 
         GBHelper.Start(HandleUpdates());
+
+        return true;
     }
 
     public static void CloseServer(ServerInfo info)
@@ -267,7 +275,7 @@ public class NetworkServer
 
         while(running)
         {
-            ITuple tuple = _serverSpace.GetP(typeof(string), typeof(string), typeof(string));
+            ITuple tuple = _serverSpace.GetP("Server", typeof(string), typeof(string));
 
             if (tuple == null) continue;
 
@@ -280,6 +288,7 @@ public class NetworkServer
                 if(_playerJoinCount >= _maxPlayerCount)
                 {
                     _serverSpace.Put((string)tuple[2], "Join", "Denied");
+                    continue;
                 }
 
                 _playerJoinCount++;
@@ -346,9 +355,6 @@ public class NetworkServer
         }
     }
 
-    private static System.Random random = new System.Random();
-    private static int _playerJoinCount;
-    private static int _maxPlayerCount;
 
     public static string RandomString(int length)
     {
