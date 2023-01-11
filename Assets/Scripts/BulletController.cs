@@ -56,19 +56,19 @@ public class BulletController : MonoBehaviour
                 {
                     if (item.collider.tag == "Player")
                     {
-                        Vector3 pos = item.collider.transform.position + new Vector3(0,1,0);
-                        GameObject temp = Instantiate(bloodVFX, pos, Quaternion.identity);
-                        ParticleSystem ps = temp.GetComponent<ParticleSystem>();
-                        var sh = ps.shape;
-                        sh.shapeType = ParticleSystemShapeType.Sphere;
-                        var em = ps.emission;
-                        em.burstCount *= 2;
-
                         PlayerController pc = item.collider.gameObject.GetComponent<PlayerController>();
                         if (pc.shielded == 0)
                         {
                             pc.TakeDamge(damage);
                             //hitSound.Play();
+
+                            Vector3 pos = item.collider.transform.position + new Vector3(0, 1, 0);
+                            GameObject temp = Instantiate(bloodVFX, pos, Quaternion.identity);
+                            ParticleSystem ps = temp.GetComponent<ParticleSystem>();
+                            var sh = ps.shape;
+                            sh.shapeType = ParticleSystemShapeType.Sphere;
+                            var em = ps.emission;
+                            em.burstCount *= 2;
                         }
                     }
                 }
@@ -80,13 +80,16 @@ public class BulletController : MonoBehaviour
         {
             if (collision.gameObject.tag == "Player")
             {
+                PlayerController pc = collision.gameObject.GetComponent<PlayerController>();
                 Instantiate(hitVFX, collision.contacts[0].point, Quaternion.identity);
-                Instantiate(bloodVFX, collision.contacts[0].point, transform.rotation);
+                if (pc.shielded == 0)
+                {
+                    Instantiate(bloodVFX, collision.contacts[0].point, transform.rotation);
+                }
                 if (collision.gameObject.GetComponent<NetworkTransform>().owner != nt.owner)
                 {
                     if (nt.isOwner)
                     {
-                        PlayerController pc = collision.gameObject.GetComponent<PlayerController>();
                         if (pc.shielded == 0)
                         {
                             pc.TakeDamge(damage);

@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletSpeed: 20
-  damage: 0
+  damage: 1
   isExplosive: 1
   explosiveRange: 5
   hitVFX: {fileID: 1249286875352315261, guid: ac42314d6f729bb4db4bb3e53790cb9e, type: 3}
