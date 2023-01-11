@@ -31,9 +31,8 @@ public class NetworkServerUI : MonoBehaviour
             else if (GUI.Button(new Rect(5, 35, 150, 25), "Join Server"))
             {
                 Debug.Log("Joining Server");
-                NetworkServer.running = true;
-                NetworkServer.JoinServer(new ServerInfo("tcp", "82.211.223.108", 5555, "test", "KEEP"));
-                inServer = true;
+                NetworkServer.running = NetworkServer.JoinServer(new ServerInfo("tcp", "82.211.223.108", 5555, "test", "KEEP"));
+                inServer = NetworkServer.running;
             }
         }
         else

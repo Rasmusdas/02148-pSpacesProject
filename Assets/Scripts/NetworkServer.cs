@@ -28,9 +28,13 @@ public class NetworkServer
     private static Dictionary<int, Vector3> _startPos = new();
     private static int _playerSpawnCount;
 
+    private static System.Random random = new System.Random();
+    private static int _playerJoinCount;
+    private static int _maxPlayerCount = 4;
+
     public static bool running;
 
-    private static bool verbose = true;
+    private static bool verbose = false;
 
     private static void Init()
     {
@@ -64,6 +68,8 @@ public class NetworkServer
 
         playerId = RandomString(16);
 
+        _playerJoinCount++;
+
         _ownSpace = new SequentialSpace();
 
         _repository.AddSpace(playerId, _ownSpace);
@@ -85,7 +91,7 @@ public class NetworkServer
 
         
     }
-    public static void JoinServer(ServerInfo info)
+    public static bool JoinServer(ServerInfo info)
     {
         Init();
         masterClient = false;
@@ -98,13 +104,19 @@ public class NetworkServer
 
         _serverSpace.Put("Server", "Join", playerId);
 
-        if(verbose) Debug.Log("Connected to server: " + info);
+        if (verbose) Debug.Log("Connected to server: " + info);
 
-        _serverSpace.Get(playerId, "Join");
+        ITuple tuple = _serverSpace.Get(playerId, "Join", typeof(string));
+
+        if ((string)tuple[2] == "Denied")
+        {
+            Debug.Log("Server was full");
+            return false;
+        }
 
         _ownSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
-        if(verbose) Debug.Log("Connected to private space " + string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
+        if (verbose) Debug.Log("Connected to private space " + string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
         LoadResources();
 
@@ -113,6 +125,8 @@ public class NetworkServer
         clientThread.Start();
 
         GBHelper.Start(HandleUpdates());
+
+        return true;
     }
 
     public static void CloseServer(ServerInfo info)
@@ -261,7 +275,7 @@ public class NetworkServer
 
         while(running)
         {
-            ITuple tuple = _serverSpace.GetP(typeof(string), typeof(string), typeof(string));
+            ITuple tuple = _serverSpace.GetP("Server", typeof(string), typeof(string));
 
             if (tuple == null) continue;
 
@@ -271,21 +285,27 @@ public class NetworkServer
             {
                 Debug.Log("Player " + tuple[2] + " Joined");
 
+                if(_playerJoinCount >= _maxPlayerCount)
+                {
+                    _serverSpace.Put((string)tuple[2], "Join", "Denied");
+                    continue;
+                }
+
+                _playerJoinCount++;
+
                 _playerIds.Add((string)tuple[2]);
 
                 ISpace newPlayerSpace = new SequentialSpace();
 
-                _repository.AddSpace((string)tuple[2],newPlayerSpace);
-                _playerSpaces.Add((string)tuple[2],newPlayerSpace);
-                _serverSpace.Put((string)tuple[2],"Join");
+                _repository.AddSpace((string)tuple[2], newPlayerSpace);
+                _playerSpaces.Add((string)tuple[2], newPlayerSpace);
+                _serverSpace.Put((string)tuple[2], "Join", "Accepted");
 
 
-                foreach(var objs in networkObjectOwners)
+                foreach (var objs in networkObjectOwners)
                 {
-                    SendPacket(new Packet(PacketType.Instantiate, objs.Value, "Server", objs.Key + "|" + objs.Value + "|" + idToObjectType[objs.Key] + "|" +NetworkPackager.Package(Vector3.zero) + "|" + NetworkPackager.Package(Quaternion.identity)), (string)tuple[2]);
+                    SendPacket(new Packet(PacketType.Instantiate, objs.Value, "Server", objs.Key + "|" + objs.Value + "|" + idToObjectType[objs.Key] + "|" + NetworkPackager.Package(Vector3.zero) + "|" + NetworkPackager.Package(Quaternion.identity)), (string)tuple[2]);
                 }
-
-                continue;
             }
             
             if (tuple != null && (string)tuple[1] == "Instantiate")
@@ -328,7 +348,6 @@ public class NetworkServer
         {
             while (_updates.Count > 0)
             {
-                Debug.Log("Executing Update");
                 _updates.Dequeue()();
             }
 
@@ -336,7 +355,6 @@ public class NetworkServer
         }
     }
 
-    private static System.Random random = new System.Random();
 
     public static string RandomString(int length)
     {
