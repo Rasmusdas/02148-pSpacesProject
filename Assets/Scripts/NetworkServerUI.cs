@@ -13,6 +13,8 @@ public class NetworkServerUI : MonoBehaviour
     string joinPort = "5555";
     string createPort = "5555";
 
+    bool spawnedPlayer;
+
     void Start()
     {
         
@@ -25,15 +27,16 @@ public class NetworkServerUI : MonoBehaviour
 
     private void OnGUI()
     {
-        createIP = GUI.TextField(new Rect(160, 5, 100, 25), createIP);
-        joinIP = GUI.TextField(new Rect(160, 35, 100, 25), joinIP);
-
-        createPort = GUI.TextField(new Rect(265, 5, 50, 25), createPort);
-        joinPort = GUI.TextField(new Rect(265, 35, 50, 25), joinPort);
+        
 
 
         if (!inServer)
         {
+            createIP = GUI.TextField(new Rect(160, 5, 100, 25), createIP);
+            joinIP = GUI.TextField(new Rect(160, 35, 100, 25), joinIP);
+
+            createPort = GUI.TextField(new Rect(265, 5, 50, 25), createPort);
+            joinPort = GUI.TextField(new Rect(265, 35, 50, 25), joinPort);
             if (GUI.Button(new Rect(5, 5, 150, 25), "Start Server"))
             {
                 Debug.Log("Starting Server");
@@ -50,22 +53,21 @@ public class NetworkServerUI : MonoBehaviour
         }
         else
         {
-            if (GUI.Button(new Rect(5, 5, 150, 25), "Spawn Player"))
+            if(!spawnedPlayer)
             {
-                NetworkServer.Instantiate("Player", new Vector3(UnityEngine.Random.Range(-10, 10), 0, UnityEngine.Random.Range(-10, 10)), Quaternion.identity);
+                if (GUI.Button(new Rect(5, 5, 150, 25), "Spawn Player"))
+                {
+                    NetworkServer.Instantiate("Player", new Vector3(UnityEngine.Random.Range(-10, 10), 0, UnityEngine.Random.Range(-10, 10)), Quaternion.identity);
+                    spawnedPlayer = true;
+                }
+                
             }
-
             if (GUI.Button(new Rect(5, 35, 150, 25), "Leave"))
             {
                 inServer = false;
                 NetworkServer.running = false;
                 NetworkServer.CloseServer(new ServerInfo("tcp", joinIP, int.Parse(joinPort), "lobby", "KEEP"));
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-            }
-
-            if (GUI.Button(new Rect(5, 65, 150, 25), "Spawn Penguin"))
-            {
-                NetworkServer.Instantiate("NewPlayer", new Vector3(UnityEngine.Random.Range(-10, 10), 0, UnityEngine.Random.Range(-10, 10)), Quaternion.identity);
             }
         }
     }
