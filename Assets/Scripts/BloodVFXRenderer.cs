@@ -45,7 +45,12 @@ public class BloodVFXRenderer : MonoBehaviour
 
     public void Add(Vector3 position, Quaternion rotation, Vector3 size)
     {
-        meshData.Add(new MeshProperties(Matrix4x4.TRS(position, rotation, size),new Vector4(1,0,0,1)));
+        Vector4 color = Vector4.zero;
+        do
+        {
+            color = new Vector4(Random.Range(0, 2), Random.Range(0, 2), Random.Range(0, 2));
+        } while (color == Vector4.one || color == Vector4.zero);
+        meshData.Add(new MeshProperties(Matrix4x4.TRS(position, rotation, size), color));
         instanceCount++;
     }
 
