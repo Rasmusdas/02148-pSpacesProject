@@ -41,7 +41,6 @@ public class BulletController : MonoBehaviour
             if(collision.gameObject.GetComponent<NetworkTransform>().owner != nt.owner)
             {
                 Instantiate(hitVFX, collision.contacts[0].point, Quaternion.identity);
-                Instantiate(bloodVFX, collision.contacts[0].point, transform.rotation);
                 if(nt.isOwner)
                 {
                     collision.gameObject.GetComponent<PlayerController>().TakeDamge(damage);
@@ -49,6 +48,7 @@ public class BulletController : MonoBehaviour
                 }
                 Destroy(gameObject);
             }
+            Instantiate(bloodVFX, collision.contacts[0].point, transform.rotation);
         }
         else
         {
