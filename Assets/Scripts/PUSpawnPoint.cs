@@ -20,7 +20,6 @@ public class PUSpawnPoint : MonoBehaviour
             yield return new WaitForSeconds(2);
             if (NetworkServer.masterClient && NetworkServer.running)
             {
-                Debug.Log("I think i am master");
                 r = Random.Range(1, 101);
                 if (r <= 10)
                 {
