@@ -13,17 +13,7 @@ public class NetworkServerUI : MonoBehaviour
     string joinPort = "5555";
     string createPort = "5555";
 
-    bool spawnedPlayer;
-
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
+    bool ready;
 
     private void OnGUI()
     {
@@ -53,16 +43,19 @@ public class NetworkServerUI : MonoBehaviour
         }
         else
         {
-            if(!spawnedPlayer)
+            int height = 5;
+
+            if(!ready)
             {
-                if (GUI.Button(new Rect(5, 5, 150, 25), "Spawn Player"))
+                if (GUI.Button(new Rect(5, height, 150, 25), "Ready"))
                 {
-                    NetworkServer.Instantiate("Player", new Vector3(UnityEngine.Random.Range(-10, 10), 0, UnityEngine.Random.Range(-10, 10)), Quaternion.identity);
-                    spawnedPlayer = true;
+                    NetworkServer.MarkReady();
+                    ready = true;
                 }
-                
+                height += 30;
             }
-            if (GUI.Button(new Rect(5, 35, 150, 25), "Leave"))
+
+            if (GUI.Button(new Rect(5, height, 150, 25), "Leave"))
             {
                 inServer = false;
                 NetworkServer.running = false;
