@@ -98,4 +98,9 @@ public class NetworkTransform : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
     }
+
+    public void Destroy()
+    {
+        NetworkServer.Destroy(new Packet(PacketType.Destroy, owner, "Server", id.ToString()));
+    }
 }

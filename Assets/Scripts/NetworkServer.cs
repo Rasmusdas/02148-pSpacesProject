@@ -159,6 +159,13 @@ public class NetworkServer
         _serverSpace.Put(playerId,"Instantiate",objName+"|"+NetworkPackager.Package(position)+"|"+NetworkPackager.Package(rotation));
     }
 
+    public static void Destroy(Packet packet)
+    {
+        if (!networkObjects.ContainsKey(int.Parse(packet.data))) throw new ArgumentException("Object does not exist on network");
+
+        _serverSpace.Put(packet.source, packet.type.ToString(), packet.data);
+    }
+
     public static void MarkReady()
     {
         if (_ready) return;
@@ -171,7 +178,7 @@ public class NetworkServer
     public static void MovementUpdate(Packet packet)
     {
         if(verbose) Debug.Log("Client: Sending Movement Packet: " + packet.source + "," + packet.type + "," + packet.data);
-        _serverSpace.Put(packet.source,packet.type.ToString(),packet.data);
+        _serverSpace.Put(packet.source, packet.type.ToString(), packet.data);
     }
 
     public static void DamagePlayer(Packet packet)
@@ -278,6 +285,14 @@ public class NetworkServer
                         networkObjects[id].GetComponent<PlayerController>().UpdateHealth(health);
                     });
                 }
+                if (type == "Destroy")
+                {
+                    _updates.Enqueue(() =>
+                    {
+                        int id = int.Parse(data);
+                        UnityEngine.Object.Destroy(networkObjects[id].gameObject);
+                    });
+                }
             }
         }
     }
@@ -343,6 +358,11 @@ public class NetworkServer
                     BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + ((string)tuple[2]).Replace(".", ",")));
                 }
                 
+            }
+
+            if (tuple != null && (string)tuple[1] == "Destroy")
+            {
+                BroadcastPacket(new Packet(PacketType.Destroy, "All", "Server", ((string)tuple[2]).Replace(".", ",")));
             }
 
             if (tuple != null && (string)tuple[1] == "Movement")
@@ -442,5 +462,6 @@ public enum PacketType
     Movement,
     Instantiate,
     Health,
-    Ready
+    Ready,
+    Destroy
 }

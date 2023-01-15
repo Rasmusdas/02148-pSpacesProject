@@ -19,7 +19,7 @@ public class MedPak : MonoBehaviour
             {
                 other.gameObject.GetComponent<PlayerController>().AddHealth(health);
             }
-            Destroy(gameObject);
+            gameObject.GetComponent<NetworkTransform>().Destroy();
         }
     }
 }
