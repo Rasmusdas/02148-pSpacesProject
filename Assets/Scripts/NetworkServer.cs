@@ -32,12 +32,15 @@ public class NetworkServer
     private static int _playerJoinCount;
     private static int _maxPlayerCount = 4;
 
+    private static int _readyCount;
+
     public static bool running;
 
     private static bool verbose = false;
-
+    private static bool _ready;
     private static void Init()
     {
+        _readyCount = 0;
         _startPos = new();
         prefabs = new();
         idToObjectType = new();
@@ -154,6 +157,15 @@ public class NetworkServer
         if (!prefabs.ContainsKey(objName)) throw new ArgumentException("Object does not exist in prefabs");
 
         _serverSpace.Put(playerId,"Instantiate",objName+"|"+NetworkPackager.Package(position)+"|"+NetworkPackager.Package(rotation));
+    }
+
+    public static void MarkReady()
+    {
+        if (_ready) return;
+
+        _ready = true;
+
+        _serverSpace.Put(playerId, "Ready", "");
     }
 
     public static void MovementUpdate(Packet packet)
@@ -342,6 +354,19 @@ public class NetworkServer
             {
                 BroadcastPacket(new Packet(PacketType.Health, "All", "Server", ((string)tuple[2]).Replace(".", ",")));
             }
+
+            if (tuple != null && (string)tuple[1] == "Ready")
+            {
+                _readyCount++;
+
+                if(_readyCount >= _playerJoinCount)
+                {
+                    foreach(var playerId in _playerIds)
+                    {
+                        _serverSpace.Put(playerId, "Instantiate", "Player");
+                    }
+                }
+            }
         }
     }
 
@@ -414,5 +439,8 @@ public struct Packet
 
 public enum PacketType
 {
-    Movement,Instantiate,Health
+    Movement,
+    Instantiate,
+    Health,
+    Ready
 }
