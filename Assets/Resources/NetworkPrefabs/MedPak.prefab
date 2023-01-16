@@ -227,7 +227,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f76935a390b50c4ebfbfcad477d332c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 25
+  health: 2
 --- !u!114 &-3684726805982909896
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -243,9 +243,6 @@ MonoBehaviour:
   updateRate: 0
   sync: 0
   id: 0
-  t: 0
-  register: 0
-  moveDelta: 0.3
   isOwner: 0
   owner: 
   dampening: 0

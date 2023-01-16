@@ -20,7 +20,7 @@ public class Shield : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            other.gameObject.GetComponent<PlayerController>().Shield(5);
+            other.gameObject.GetComponent<PlayerController>().Shield(3);
             Destroy(gameObject);
         }
     }
