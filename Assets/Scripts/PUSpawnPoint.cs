@@ -38,7 +38,7 @@ public class PUSpawnPoint : MonoBehaviour
                 }
                 else if (r <= 40)
                 {
-                    NetworkServer.Instantiate("SpeedBooster", new Vector3(x, 0.5f, z), Quaternion.Euler(90, 0, 0));
+                    NetworkServer.Instantiate("SpeedBooster", new Vector3(0, 0.5f, 0), Quaternion.Euler(90, 0, 0));
                     live = true;
                 }
             }
