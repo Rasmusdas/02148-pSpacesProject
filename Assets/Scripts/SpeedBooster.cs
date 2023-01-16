@@ -14,10 +14,13 @@ public class SpeedBooster : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player" && other.gameObject.GetComponent<NetworkTransform>().isOwner)
+        if (other.tag == "Player")
         {
-            other.gameObject.GetComponent<PlayerController>().moveSpeed += speed;
-            Destroy(gameObject);
+            if (other.gameObject.GetComponent<NetworkTransform>().isOwner)
+            {
+                other.gameObject.GetComponent<PlayerController>().moveSpeed += speed;
+            }
+            gameObject.GetComponent<NetworkTransform>().Destroy();
         }
     }
 }

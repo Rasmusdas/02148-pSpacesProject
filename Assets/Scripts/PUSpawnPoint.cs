@@ -36,6 +36,11 @@ public class PUSpawnPoint : MonoBehaviour
                     NetworkServer.Instantiate("Boom", transform.position, Quaternion.identity);
                     live = true;
                 }
+                else if (r <= 40)
+                {
+                    NetworkServer.Instantiate("SpeedBooster", transform.position, Quaternion.identity);
+                    live = true;
+                }
             }
         }
     }
