@@ -342,9 +342,13 @@ public class NetworkServer
 
             if(networkObjects.ContainsKey(id))
             {
-                if (networkObjects[id].gameObject != null)
+                if (networkObjects[id] != null)
                 {
                     UnityEngine.Object.Destroy(networkObjects[id].gameObject);
+                }
+                else
+                {
+                    networkObjects.Remove(id);
                 }
             }
         });
