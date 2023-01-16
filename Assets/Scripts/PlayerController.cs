@@ -59,6 +59,7 @@ public class PlayerController : MonoBehaviour
         playerMat = meshRenderer.material;
         TryGetComponent<Animator>(out anim);
         if (!nT.isOwner) return;
+        name = "Player REEEEEEEEEEEEEEEEEEE";
         characterController = GetComponent<CharacterController>();
         cam = Camera.main;
         cam.GetComponent<CamController>().player = gameObject;
@@ -201,7 +202,7 @@ public class PlayerController : MonoBehaviour
 
     public void TakeDamge(int dmg)
     {
-        NetworkServer.DamagePlayer(new Packet(PacketType.Health, NetworkServer.playerId, "Server", nT.id+"|" +dmg.ToString()));
+        NetworkServer.DamagePlayer(nT.id,dmg);
 
     }
 

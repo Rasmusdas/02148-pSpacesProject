@@ -11,40 +11,49 @@ using UnityEngine;
 
 public class NetworkServer
 {
-    public static bool masterClient = false;
+
+    #region Fields
     private static SpaceRepository _repository;
     private static ISpace _serverSpace;
     private static ISpace _ownSpace;
     private static Queue<Action> _updates = new Queue<Action>();
 
     private static Dictionary<string,ISpace> _playerSpaces = new Dictionary<string,ISpace>();
-    public static string playerId;
-    private static List<string> _playerIds = new List<string>();
-    private static int _currentId;
-    private static Dictionary<int,NetworkTransform> networkObjects = new();
-    private static Dictionary<int, string> networkObjectOwners = new();
-    private static Dictionary<int, string> idToObjectType = new();
+    public static Dictionary<int, NetworkTransform> networkObjects = new();
+    private static Dictionary<int, string> _networkObjectOwners = new();
+    private static Dictionary<int, string> _idToObjectType = new();
     private static Dictionary<string, GameObject> prefabs = new();
     private static Dictionary<int, Vector3> _startPos = new();
-    private static int _playerSpawnCount;
+    private static List<string> _playerIds = new List<string>();
 
-    private static System.Random random = new System.Random();
+    private static int _currentId;
+    private static int _playerSpawnCount;
+    private static int _readyCount;
     private static int _playerJoinCount;
     private static int _maxPlayerCount = 4;
-
-    private static int _readyCount;
+    private static bool _ready;
 
     public static bool running;
+    public static string playerId;
+    public static bool masterClient = false;
 
-    private static bool verbose = false;
-    private static bool _ready;
+    const bool VERBOSE = false;
+
+    private static System.Random random = new System.Random();
+    #endregion
+
+    #region Server Setup
+
+    /// <summary>
+    /// Sets the Network Server state to the default state.
+    /// </summary>
     private static void Init()
     {
         _readyCount = 0;
         _startPos = new();
         prefabs = new();
-        idToObjectType = new();
-        networkObjectOwners = new();
+        _idToObjectType = new();
+        _networkObjectOwners = new();
         networkObjects = new();
         _playerSpaces = new();
         _playerIds = new();
@@ -53,6 +62,10 @@ public class NetworkServer
         _currentId = 0;
     }
 
+    /// <summary>
+    /// Starts a server with the provided arguments as settings.
+    /// </summary>
+    /// <param name="info"></param>
     public static void StartServer(ServerInfo info)
     {
         Init();
@@ -68,7 +81,7 @@ public class NetworkServer
         _startPos.Add(2, new Vector3(11, 1, -11));
         _startPos.Add(3, new Vector3(-11, 1, -11));
 
-        if (verbose) Debug.Log("Server Started: " + info);
+        if (VERBOSE) Debug.Log("Server Started: " + info);
 
         playerId = RandomString(16);
 
@@ -91,10 +104,16 @@ public class NetworkServer
 
         LoadResources();
 
-        GBHelper.Start(HandleUpdates());
+        GBHelper.Start(HandleGameUpdates());
 
         
     }
+
+    /// <summary>
+    /// Joins a server with the provided arguments
+    /// </summary>
+    /// <param name="info"></param>
+    /// <returns></returns>
     public static bool JoinServer(ServerInfo info)
     {
         Init();
@@ -107,7 +126,7 @@ public class NetworkServer
 
         _serverSpace.Put("Server", "Join", playerId);
 
-        if (verbose) Debug.Log("Connected to server: " + info);
+        if (VERBOSE) Debug.Log("Connected to server: " + info);
 
         ITuple tuple = _serverSpace.Get(playerId, "Join", typeof(int));
 
@@ -121,7 +140,7 @@ public class NetworkServer
 
         _ownSpace = new RemoteSpace(string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
-        if (verbose) Debug.Log("Connected to private space " + string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
+        if (VERBOSE) Debug.Log("Connected to private space " + string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
         LoadResources();
 
@@ -129,11 +148,15 @@ public class NetworkServer
 
         clientThread.Start();
 
-        GBHelper.Start(HandleUpdates());
+        GBHelper.Start(HandleGameUpdates());
 
         return true;
     }
 
+    /// <summary>
+    /// Closes the open server.
+    /// </summary>
+    /// <param name="info"></param>
     public static void CloseServer(ServerInfo info)
     {
         if(masterClient)
@@ -142,6 +165,9 @@ public class NetworkServer
         }
     }
 
+    /// <summary>
+    /// Loads in the prefabs that can be instantiated from the network. The load path is Resources/NetworkPrefabs.
+    /// </summary>
     private static void LoadResources()
     {
         var objs = Resources.LoadAll("NetworkPrefabs",typeof(GameObject));
@@ -151,7 +177,17 @@ public class NetworkServer
             prefabs.Add(v.name, (GameObject)v);
         }
     }
+    #endregion
 
+    #region Public Methods
+
+    /// <summary>
+    /// Used to instantiate an object on all clients.
+    /// </summary>
+    /// <param name="objName"></param>
+    /// <param name="position"></param>
+    /// <param name="rotation"></param>
+    /// <exception cref="ArgumentException"></exception>
     public static void Instantiate(string objName,Vector3 position, Quaternion rotation)
     {
         if (!prefabs.ContainsKey(objName)) throw new ArgumentException("Object does not exist in prefabs");
@@ -159,13 +195,21 @@ public class NetworkServer
         _serverSpace.Put(playerId,"Instantiate",objName+"|"+NetworkPackager.Package(position)+"|"+NetworkPackager.Package(rotation));
     }
 
-    public static void Destroy(Packet packet)
+    /// <summary>
+    /// Destroys an object with the provided id on all clients.
+    /// </summary>
+    /// <param name="packet"></param>
+    /// <exception cref="ArgumentException"></exception>
+    public static void Destroy(int id)
     {
-        if (!networkObjects.ContainsKey(int.Parse(packet.data))) throw new ArgumentException("Object does not exist on network");
+        if (!networkObjects.ContainsKey(id)) throw new ArgumentException("Object does not exist on network");
 
-        _serverSpace.Put(packet.source, packet.type.ToString(), packet.data);
+        _serverSpace.Put(playerId,PacketType.Destroy.ToString(), id);
     }
 
+    /// <summary>
+    /// Sends a ready signal to the server to mark being ready to play.
+    /// </summary>
     public static void MarkReady()
     {
         if (_ready) return;
@@ -175,222 +219,33 @@ public class NetworkServer
         _serverSpace.Put(playerId, "Ready", "");
     }
 
-    public static void MovementUpdate(Packet packet)
+    /// <summary>
+    /// Updates the position of the object with the given id with the provided position and rotation on other clients.
+    /// </summary>
+    /// <param name="packet"></param>
+    public static void MovementUpdate(int id, Vector3 position, Quaternion rotation)
     {
-        if(verbose) Debug.Log("Client: Sending Movement Packet: " + packet.source + "," + packet.type + "," + packet.data);
-        _serverSpace.Put(packet.source, packet.type.ToString(), packet.data);
+        if(VERBOSE) Debug.Log("Client: Sending Movement Packet: " + playerId + "," + PacketType.Movement + "," + id + "|" + NetworkPackager.Package(position) + "|" + NetworkPackager.Package(rotation));
+        _serverSpace.Put(playerId, PacketType.Movement.ToString(), id + "|" + NetworkPackager.Package(position) + "|" + NetworkPackager.Package(rotation));
     }
 
-    public static void DamagePlayer(Packet packet)
+    /// <summary>
+    /// Decreases the hp of the object with the given id with the provided amount.
+    /// </summary>
+    /// <param name="packet"></param>
+    public static void DamagePlayer(int id, int amount)
     {
-        if (verbose) Debug.Log("Client: Sending Movement Packet: " + packet.source + "," + packet.type + "," + packet.data);
+        if (VERBOSE) Debug.Log("Client: Sending Movement Packet: " + playerId + "," + PacketType.Health + "," + id+"|"+amount);
 
-        _serverSpace.Put(packet.source, packet.type.ToString(), packet.data);
+        _serverSpace.Put(playerId, PacketType.Health.ToString(), id + "|" + amount);
     }
 
-    private static void BroadcastPacket(Packet packet)
-    {
-        foreach (var id in _playerIds)
-        {
-            if (id == packet.source) continue;
+    #endregion
 
-            if (verbose) Debug.Log("Server: Sending packet: " + packet);
+    #region Private Methods
 
-            _playerSpaces[id].Put(packet.type.ToString(), packet.data);
-        }
-    }
-
-    private static void SendPacket(Packet packet,string target)
-    {
-        foreach (var id in _playerIds)
-        {
-            if (id != target) continue;
-
-            if (verbose) Debug.Log("Server: Sending packet: " + packet);
-
-            _playerSpaces[id].Put(packet.type.ToString(), packet.data);
-        }
-    }
-
-    private static void HandleClientUpdates()
-    {
-        while(running)
-        {
-            IEnumerable<ITuple> tuples = _ownSpace.GetAll(typeof(string), typeof(string));
-
-            foreach(ITuple tuple in tuples)
-            {
-                if (tuple == null) continue;
-
-                string type = (string)tuple[0];
-                string data = (string)tuple[1];
-
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                {
-                    data = data.Replace(",",".");
-                }
-
-                if (verbose) Debug.Log("Client: Received Packet of Type " + (string)tuple[0]);
-
-                if (type == "Movement")
-                {
-                    string[] splitData = data.Split("|");
-
-                    Vector3 position = NetworkPackager.UnpackageVector3(splitData[1]);
-                    Quaternion rotation = NetworkPackager.UnpackgeQuaternion(splitData[2]);
-
-                    _updates.Enqueue(() => {
-                        int id = int.Parse(splitData[0]);
-                        networkObjects[id].UpdatePosition(position);
-                        networkObjects[id].UpdateRotation(rotation);
-                    });
-
-                }
-                if (type == "Instantiate")
-                {
-                    string[] splitData = data.Split("|");
-
-                    _updates.Enqueue(() => {
-                        int objId = int.Parse(splitData[0]);
-                        string id = splitData[1];
-                        string prefabName = splitData[2];
-                        string prefabPos = splitData[3];
-                        string prefabRot = splitData[4];
-                        GameObject gb = GBHelper.Instantiate(prefabs[prefabName], NetworkPackager.UnpackageVector3(prefabPos), NetworkPackager.UnpackgeQuaternion(prefabRot));
-
-                        gb.GetComponent<NetworkTransform>().id = objId;
-                        gb.GetComponent<NetworkTransform>().owner = id;
-
-                        if(prefabName != "Bullet")
-                        {
-                            networkObjects.Add(objId, gb.GetComponent<NetworkTransform>());
-                        }
-
-                        if (id == playerId)
-                        {
-                            gb.GetComponent<NetworkTransform>().isOwner = true;
-                        }
-                    });
-
-
-                }
-                if (type == "Health")
-                {
-                    string[] splitData = data.Split("|");
-
-                    _updates.Enqueue(() =>
-                    {
-                        int id = int.Parse(splitData[0]);
-                        int health = int.Parse(splitData[1]);
-                        networkObjects[id].GetComponent<PlayerController>().UpdateHealth(health);
-                    });
-                }
-                if (type == "Destroy")
-                {
-                    _updates.Enqueue(() =>
-                    {
-                        int id = int.Parse(data);
-                        UnityEngine.Object.Destroy(networkObjects[id].gameObject);
-                    });
-                }
-            }
-        }
-    }
-
-
-    private static void HandleServerUpdates()
-    {
-        if(verbose) Debug.Log("Server: Handler started");
-
-        while(running)
-        {
-            ITuple tuple = _serverSpace.GetP(typeof(string), typeof(string), typeof(string));
-
-            if (tuple == null) continue;
-
-            if(verbose) Debug.Log("Server: Received Packet of Type " + (string)tuple[1]);
-
-            if (tuple != null && (string)tuple[1] == "Join")
-            {
-                Debug.Log("Player " + tuple[2] + " Joined");
-
-                if(_playerJoinCount >= _maxPlayerCount)
-                {
-                    _serverSpace.Put((string)tuple[2], "Join", 0);
-                    Debug.Log("Player " + tuple[2] + " was denied because server is too full");
-                    continue;
-                }
-
-                _playerJoinCount++;
-
-                _playerIds.Add((string)tuple[2]);
-
-                ISpace newPlayerSpace = new SequentialSpace();
-
-                _repository.AddSpace((string)tuple[2], newPlayerSpace);
-                _playerSpaces.Add((string)tuple[2], newPlayerSpace);
-                _serverSpace.Put((string)tuple[2], "Join", 1);
-
-
-                foreach (var objs in networkObjectOwners)
-                {
-                    SendPacket(new Packet(PacketType.Instantiate, objs.Value, "Server", objs.Key + "|" + objs.Value + "|" + idToObjectType[objs.Key] + "|" + NetworkPackager.Package(Vector3.zero) + "|" + NetworkPackager.Package(Quaternion.identity)), (string)tuple[2]);
-                }
-            }
-            
-            if (tuple != null && (string)tuple[1] == "Instantiate")
-            {
-                if (((string)tuple[2]).Contains("Player"))
-                {
-                    networkObjectOwners.Add(_currentId, (string)tuple[0]);
-                    idToObjectType.Add(_currentId, "NewPlayer");
-                    BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + "NewPlayer" + "|" + NetworkPackager.Package(_startPos[_playerSpawnCount]) + "|" + NetworkPackager.Package(Quaternion.identity)));                   
-                    _playerSpawnCount = (_playerSpawnCount + 1) % 4;
-                }
-                else
-                {
-                    if (!((string)tuple[2]).Contains("Bullet"))
-                    {
-                        networkObjectOwners.Add(_currentId, (string)tuple[0]);
-                        idToObjectType.Add(_currentId, (string)tuple[2]);
-                    }
-
-                    BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + ((string)tuple[2]).Replace(".", ",")));
-                }
-                
-            }
-
-            if (tuple != null && (string)tuple[1] == "Destroy")
-            {
-                BroadcastPacket(new Packet(PacketType.Destroy, "All", "Server", ((string)tuple[2]).Replace(".", ",")));
-            }
-
-            if (tuple != null && (string)tuple[1] == "Movement")
-            {
-                BroadcastPacket(new Packet(PacketType.Movement, (string)tuple[0], "Server", ((string)tuple[2]).Replace(".", ",")));
-            }
-
-            if (tuple != null && (string)tuple[1] == "Health")
-            {
-                BroadcastPacket(new Packet(PacketType.Health, "All", "Server", ((string)tuple[2]).Replace(".", ",")));
-            }
-
-            if (tuple != null && (string)tuple[1] == "Ready")
-            {
-                _readyCount++;
-
-                if(_readyCount >= _playerJoinCount)
-                {
-                    foreach(var playerId in _playerIds)
-                    {
-                        _serverSpace.Put(playerId, "Instantiate", "Player");
-                    }
-                }
-            }
-        }
-    }
-
-    private static IEnumerator HandleUpdates()
+    #region Client Methods
+    private static IEnumerator HandleGameUpdates()
     {
         while (running)
         {
@@ -403,13 +258,249 @@ public class NetworkServer
         }
     }
 
+    private static void HandleClientUpdates()
+    {
+        while(running)
+        {
+            IEnumerable<ITuple> tuples = _ownSpace.GetAll(typeof(string), typeof(string));
 
-    public static string RandomString(int length)
+            foreach(ITuple tuple in tuples)
+            {
+                string type = (string)tuple[0];
+                string data = (string)tuple[1];
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    data = data.Replace(",",".");
+                }
+
+                if (VERBOSE) Debug.Log("Client: Received Packet of Type " + (string)tuple[0]);
+
+                switch (type)
+                {
+                    case "Movement":
+                        HandleClientMovement(data);
+                        break;
+                    case "Instantiate":
+                        HandleClientInstantiate(data);
+                        break;
+                    case "Health":
+                        HandleClientHealth(data);
+                        break;
+                    case "Destroy":
+                        HandleClientDestroy(data);
+                        break;
+                }
+            }
+        }
+    }
+
+    private static void HandleClientDestroy(string data)
+    {
+        _updates.Enqueue(() =>
+        {
+            int id = int.Parse(data);
+            UnityEngine.Object.Destroy(networkObjects[id].gameObject);
+        });
+    }
+
+    private static void HandleClientHealth(string data)
+    {
+        string[] splitData = data.Split("|");
+
+        _updates.Enqueue(() =>
+        {
+            int id = int.Parse(splitData[0]);
+            int health = int.Parse(splitData[1]);
+            networkObjects[id].GetComponent<PlayerController>().UpdateHealth(health);
+        });
+    }
+
+    private static void HandleClientMovement(string data)
+    {
+        string[] splitData = data.Split("|");
+
+        Vector3 position = NetworkPackager.UnpackageVector3(splitData[1]);
+        Quaternion rotation = NetworkPackager.UnpackgeQuaternion(splitData[2]);
+
+        _updates.Enqueue(() =>
+        {
+            int id = int.Parse(splitData[0]);
+            networkObjects[id].UpdatePosition(position);
+            networkObjects[id].UpdateRotation(rotation);
+        });
+    }
+
+    private static void HandleClientInstantiate(string data)
+    {
+        string[] splitData = data.Split("|");
+
+        _updates.Enqueue(() =>
+        {
+            int objId = int.Parse(splitData[0]);
+            string id = splitData[1];
+            string prefabName = splitData[2];
+            string prefabPos = splitData[3];
+            string prefabRot = splitData[4];
+            GameObject gb = GBHelper.Instantiate(prefabs[prefabName], NetworkPackager.UnpackageVector3(prefabPos), NetworkPackager.UnpackgeQuaternion(prefabRot));
+
+            gb.GetComponent<NetworkTransform>().id = objId;
+            gb.GetComponent<NetworkTransform>().owner = id;
+
+            if (prefabName != "Bullet")
+            {
+                networkObjects.Add(objId, gb.GetComponent<NetworkTransform>());
+            }
+
+            if (id == playerId)
+            {
+                gb.GetComponent<NetworkTransform>().isOwner = true;
+            }
+        });
+    }
+
+    #endregion
+
+    #region Server Methods
+
+    private static void HandleServerUpdates()
+    {
+        if(VERBOSE) Debug.Log("Server: Handler started");
+
+        while(running)
+        {
+            IEnumerable<ITuple> tuples = _serverSpace.GetAll(typeof(string), typeof(string), typeof(string));
+
+            foreach(ITuple tuple in tuples)
+            {
+                string type = (string)tuple[1];
+
+                if (VERBOSE) Debug.Log("Server: Received Packet of Type " + (string)tuple[1]);
+
+                switch (type)
+                {
+                    case "Join":
+                        HandleServerJoin(tuple);
+                        break;
+                    case "Instantiate":
+                        HandleServerInstantiate(tuple);
+                        break;
+                    case "Destroy":
+                        BroadcastPacket(new Packet(PacketType.Destroy, "All", "Server", ((string)tuple[2]).Replace(".", ",")));
+                        break;
+                    case "Movement":
+                        BroadcastPacket(new Packet(PacketType.Movement, (string)tuple[0], "Server", ((string)tuple[2]).Replace(".", ",")));
+                        break;
+                    case "Health":
+                        BroadcastPacket(new Packet(PacketType.Health, "All", "Server", ((string)tuple[2]).Replace(".", ",")));
+                        break;
+                    case "Ready":
+                        HandleServerReady();
+                        break;
+                }
+            }
+        }
+    }
+
+    private static void BroadcastPacket(Packet packet)
+    {
+        foreach (var id in _playerIds)
+        {
+            if (id == packet.source) continue;
+
+            if (VERBOSE) Debug.Log("Server: Sending packet: " + packet);
+
+            _playerSpaces[id].Put(packet.type.ToString(), packet.data);
+        }
+    }
+
+    private static void SendPacket(Packet packet, string target)
+    {
+        foreach (var id in _playerIds)
+        {
+            if (id != target) continue;
+
+            if (VERBOSE) Debug.Log("Server: Sending packet: " + packet);
+
+            _playerSpaces[id].Put(packet.type.ToString(), packet.data);
+        }
+    }
+
+    private static void HandleServerReady()
+    {
+        _readyCount++;
+
+        if (_readyCount >= _playerJoinCount)
+        {
+            foreach (var playerId in _playerIds)
+            {
+                _serverSpace.Put(playerId, "Instantiate", "Player");
+            }
+        }
+    }
+
+    private static void HandleServerInstantiate(ITuple tuple)
+    {
+        if (((string)tuple[2]).Contains("Player"))
+        {
+            _networkObjectOwners.Add(_currentId, (string)tuple[0]);
+            _idToObjectType.Add(_currentId, "NewPlayer");
+            BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + "NewPlayer" + "|" + NetworkPackager.Package(_startPos[_playerSpawnCount]) + "|" + NetworkPackager.Package(Quaternion.identity)));
+            _playerSpawnCount = (_playerSpawnCount + 1) % 4;
+        }
+        else
+        {
+            if (!((string)tuple[2]).Contains("Bullet"))
+            {
+                _networkObjectOwners.Add(_currentId, (string)tuple[0]);
+                _idToObjectType.Add(_currentId, (string)tuple[2]);
+            }
+
+            BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + ((string)tuple[2]).Replace(".", ",")));
+        }
+    }
+
+    private static void HandleServerJoin(ITuple tuple)
+    {
+        Debug.Log("Player " + tuple[2] + " Joined");
+
+        if (_playerJoinCount >= _maxPlayerCount)
+        {
+            _serverSpace.Put((string)tuple[2], "Join", 0);
+            Debug.Log("Player " + tuple[2] + " was denied because server is too full");
+            return;
+        }
+
+        _playerJoinCount++;
+
+        _playerIds.Add((string)tuple[2]);
+
+        ISpace newPlayerSpace = new SequentialSpace();
+
+        _repository.AddSpace((string)tuple[2], newPlayerSpace);
+        _playerSpaces.Add((string)tuple[2], newPlayerSpace);
+        _serverSpace.Put((string)tuple[2], "Join", 1);
+
+
+        foreach (var objs in _networkObjectOwners)
+        {
+            SendPacket(new Packet(PacketType.Instantiate, objs.Value, "Server", objs.Key + "|" + objs.Value + "|" + _idToObjectType[objs.Key] + "|" + NetworkPackager.Package(Vector3.zero) + "|" + NetworkPackager.Package(Quaternion.identity)), (string)tuple[2]);
+        }
+    }
+
+    #endregion
+
+    #region Shared/Utility Methods
+    private static string RandomString(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         return new string(Enumerable.Repeat(chars, length)
             .Select(s => s[random.Next(s.Length)]).ToArray());
     }
+
+    #endregion
+
+    #endregion
 
 }
 

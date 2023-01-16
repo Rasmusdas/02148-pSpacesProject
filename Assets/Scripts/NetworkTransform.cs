@@ -11,22 +11,20 @@ public class NetworkTransform : MonoBehaviour
     public int updateRate;
     public bool sync;
     public int id;
-    public float t;
-    public bool register;
-    public float moveDelta = 0.3f;
     public bool isOwner;
-
     public string owner;
 
     [Range(1, 10)]
     public int dampening;
 
-    int ticket;
-
-    Vector3 prevPos;
+    private int ticket;
+    private Vector3 prevPos;
     private float rotDelta;
     private Quaternion prevRot;
     private Animator anim;
+    private float t;
+
+    const float MOVE_DELTA = 0.3f;
 
     private void Start()
     {
@@ -41,18 +39,12 @@ public class NetworkTransform : MonoBehaviour
         t += Time.deltaTime;
         if (t >= 1f / updateRate)
         {
-            if (Vector3.Distance(transform.position, prevPos) > moveDelta || Quaternion.Angle(transform.rotation,prevRot) > rotDelta)
+            if (Vector3.Distance(transform.position, prevPos) > MOVE_DELTA || Quaternion.Angle(transform.rotation,prevRot) > rotDelta)
             {
                 prevPos = transform.position;
                 prevRot = transform.rotation;
-                NetworkServer.MovementUpdate(new Packet(PacketType.Movement, NetworkServer.playerId, "Server", id+"|"+NetworkPackager.Package(transform.position)+"|"+ NetworkPackager.Package(transform.rotation)));
+                NetworkServer.MovementUpdate(id, transform.position, transform.rotation);
             }
-
-            //if (Quaternion.Angle(transform.rotation, prevRot) > rotDelta)
-            //{
-            //    prevRot = transform.rotation;
-            //    NetworkServer.RotationUpdate(new Packet(PacketType.Rotation, NetworkServer.playerId, "Server", (id, transform.rotation)));
-            //}
             t = 0;
         }
     }
@@ -101,6 +93,6 @@ public class NetworkTransform : MonoBehaviour
 
     public void Destroy()
     {
-        NetworkServer.Destroy(new Packet(PacketType.Destroy, owner, "Server", id.ToString()));
+        NetworkServer.Destroy(id);
     }
 }

@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Rendering.VirtualTexturing;
-using static UnityEditor.PlayerSettings;
 
 public class BooldVFX : MonoBehaviour
 {
@@ -39,7 +37,6 @@ public class BooldVFX : MonoBehaviour
             collisionEvents = new ParticleCollisionEvent[collCount];
 
         int eventCount = ps.GetCollisionEvents(other, collisionEvents);
-        Debug.Log(eventCount);
 
         for (int i = 0; i < eventCount; i++)
         {

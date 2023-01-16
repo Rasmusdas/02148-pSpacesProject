@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class BulletController : MonoBehaviour
 {
@@ -29,6 +28,20 @@ public class BulletController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.velocity = transform.forward * bulletSpeed;
         Destroy(gameObject, 2f);
+
+        foreach(var v in NetworkServer.networkObjects)
+        {
+            if(v.Value.owner == nt.owner)
+            {
+                if (v.Value == null) continue;
+
+                if(v.Value.TryGetComponent<PlayerController>(out PlayerController con))
+                {
+                    Debug.Log(con.name + " | " + name);
+                    Physics.IgnoreCollision(GetComponent<Collider>(), con.GetComponent<Collider>());
+                }
+            }
+        }
     }
 
     // Update is called once per frame
@@ -88,6 +101,7 @@ public class BulletController : MonoBehaviour
                 }
                 if (collision.gameObject.GetComponent<NetworkTransform>().owner != nt.owner)
                 {
+
                     if (nt.isOwner)
                     {
                         if (pc.shielded == 0)
@@ -98,7 +112,6 @@ public class BulletController : MonoBehaviour
                     }
                     Destroy(gameObject);
                 }
-
             }
             else
             {
@@ -106,6 +119,7 @@ public class BulletController : MonoBehaviour
                 ParticleSystem ps = obj.GetComponent<ParticleSystem>();
                 ps.startColor = Color.blue;
                 ps.startLifetime /= 2;
+                Debug.Log(collision.gameObject);
                 Destroy(gameObject);
             }
         }

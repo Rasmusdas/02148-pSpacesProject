@@ -1257,7 +1257,6 @@ GameObject:
   - component: {fileID: -2477119129862121940}
   - component: {fileID: -2763026488790560002}
   - component: {fileID: 5343407717514452096}
-  - component: {fileID: 1218493663334964948}
   m_Layer: 8
   m_Name: NewPlayer
   m_TagString: Player
@@ -1347,10 +1346,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bullet: {fileID: 1511207710127842626, guid: 834154a7e7411954a96e762955da048d, type: 3}
   muzzelPoint: {fileID: 94180303172122206}
-  bulletSpeed: 10
-  damage: 2
   clipSize: 10
-  range: 2
   fireRate: 0.6
   reloadSpeed: 1
   defultSpred: 5
@@ -1376,9 +1372,6 @@ MonoBehaviour:
   updateRate: 10
   sync: 1
   id: 0
-  t: 0
-  register: 0
-  moveDelta: 0.3
   isOwner: 0
   owner: 
   dampening: 5
@@ -1498,20 +1491,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!136 &1218493663334964948
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6005379661290547115}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 1.1
-  m_Height: 5.1302605
-  m_Direction: 1
-  m_Center: {x: 0, y: 1.3351257, z: 0.2}
 --- !u!1 &6283890977650605885
 GameObject:
   m_ObjectHideFlags: 0
