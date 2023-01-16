@@ -59,7 +59,6 @@ public class PlayerController : MonoBehaviour
         playerMat = meshRenderer.material;
         TryGetComponent<Animator>(out anim);
         if (!nT.isOwner) return;
-        name = "Player REEEEEEEEEEEEEEEEEEE";
         characterController = GetComponent<CharacterController>();
         cam = Camera.main;
         cam.GetComponent<CamController>().player = gameObject;

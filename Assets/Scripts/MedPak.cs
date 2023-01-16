@@ -13,6 +13,7 @@ public class MedPak : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        
         if(other.tag == "Player")
         {
             if (other.gameObject.GetComponent<NetworkTransform>().isOwner)
@@ -20,6 +21,7 @@ public class MedPak : MonoBehaviour
                 other.gameObject.GetComponent<PlayerController>().AddHealth(health);
             }
             gameObject.GetComponent<NetworkTransform>().Destroy();
+            Debug.Log(other.name);
         }
     }
 }

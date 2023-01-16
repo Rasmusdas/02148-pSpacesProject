@@ -37,7 +37,7 @@ public class NetworkServer
     public static string playerId;
     public static bool masterClient = false;
 
-    const bool VERBOSE = false;
+    const bool VERBOSE = true;
 
     private static System.Random random = new System.Random();
     #endregion
@@ -204,7 +204,7 @@ public class NetworkServer
     {
         if (!networkObjects.ContainsKey(id)) throw new ArgumentException("Object does not exist on network");
 
-        _serverSpace.Put(playerId,PacketType.Destroy.ToString(), id);
+        _serverSpace.Put(playerId,PacketType.Destroy.ToString(), id.ToString());
     }
 
     /// <summary>
@@ -225,7 +225,7 @@ public class NetworkServer
     /// <param name="packet"></param>
     public static void MovementUpdate(int id, Vector3 position, Quaternion rotation)
     {
-        if(VERBOSE) Debug.Log("Client: Sending Movement Packet: " + playerId + "," + PacketType.Movement + "," + id + "|" + NetworkPackager.Package(position) + "|" + NetworkPackager.Package(rotation));
+        //if(VERBOSE) Debug.Log("Client: Sending Movement Packet: " + playerId + "," + PacketType.Movement + "," + id + "|" + NetworkPackager.Package(position) + "|" + NetworkPackager.Package(rotation));
         _serverSpace.Put(playerId, PacketType.Movement.ToString(), id + "|" + NetworkPackager.Package(position) + "|" + NetworkPackager.Package(rotation));
     }
 

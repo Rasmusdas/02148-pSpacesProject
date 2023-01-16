@@ -37,7 +37,6 @@ public class BulletController : MonoBehaviour
 
                 if(v.Value.TryGetComponent<PlayerController>(out PlayerController con))
                 {
-                    Debug.Log(con.name + " | " + name);
                     Physics.IgnoreCollision(GetComponent<Collider>(), con.GetComponent<Collider>());
                 }
             }
