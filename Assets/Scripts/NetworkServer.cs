@@ -339,7 +339,10 @@ public class NetworkServer
         _updates.Enqueue(() =>
         {
             int id = int.Parse(data);
-            UnityEngine.Object.Destroy(networkObjects[id].gameObject);
+            if(networkObjects[id].gameObject != null)
+            {
+                UnityEngine.Object.Destroy(networkObjects[id].gameObject);
+            }
         });
     }
 
