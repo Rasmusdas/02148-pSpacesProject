@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5532804769294511316}
   - component: {fileID: 7116066800029036901}
   - component: {fileID: 3727588494764502762}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: BulletX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50,7 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletSpeed: 20
-  damage: 0
+  damage: 2
   isExplosive: 1
   explosiveRange: 5
   hitVFX: {fileID: 1249286875352315261, guid: ac42314d6f729bb4db4bb3e53790cb9e, type: 3}
@@ -308,7 +308,7 @@ GameObject:
   - component: {fileID: 7829906539202397641}
   - component: {fileID: 8969349634292813157}
   - component: {fileID: 2708654444337172267}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}

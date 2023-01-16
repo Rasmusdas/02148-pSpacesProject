@@ -47,6 +47,7 @@ public class Gun : MonoBehaviour
     AudioSource gunShot;
     NetworkTransform nT;
     GameObject UI;
+    GameObject defaultBullet;
 
     // Start is called before the first frame update
     void Start()
@@ -60,6 +61,8 @@ public class Gun : MonoBehaviour
         UI = ammoText.gameObject.transform.parent.gameObject;
         UI.transform.parent = null;
         UI.SetActive(nT.isOwner);
+
+        defaultBullet = bullet;
     }
 
     // Update is called once per frame
@@ -116,6 +119,7 @@ public class Gun : MonoBehaviour
         isReloading = true;
         yield return new WaitForSeconds(reloadSpeed);
         curretAmmo = clipSize;
+        bullet = defaultBullet;
         isReloading = false;
         canReload = true;
         canShoot = true;
@@ -167,6 +171,8 @@ public class Gun : MonoBehaviour
     }
 
     public int GetCurretAmmo() { return curretAmmo; }
+
+    public void SetFullAmmo() { curretAmmo = clipSize; }
 
     public float GetReloadTimeLeft() { return reloadTimeLeft; }
 

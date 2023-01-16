@@ -21,14 +21,19 @@ public class PUSpawnPoint : MonoBehaviour
             if (NetworkServer.masterClient && NetworkServer.running)
             {
                 r = Random.Range(1, 101);
-                if (r <= 10)
+                if (r <= 7)
                 {
                     NetworkServer.Instantiate("Shield", transform.position, Quaternion.identity);
                     live = true;
                 } 
-                else if (r <= 30)
+                else if (r <= 25)
                 {
                     NetworkServer.Instantiate("MedPak", transform.position, Quaternion.identity);
+                    live = true;
+                }
+                else if (r <= 32)
+                {
+                    NetworkServer.Instantiate("Boom", transform.position, Quaternion.identity);
                     live = true;
                 }
             }
