@@ -65,7 +65,7 @@ public class NetworkServerUI : MonoBehaviour
 
                 Debug.Log(players.Length);
 
-                if(count == players.Length-1)
+                if(count >= players.Length-1)
                 {
                     if (GUI.Button(new Rect(5, height, 150, 25), "Restart"))
                     {
