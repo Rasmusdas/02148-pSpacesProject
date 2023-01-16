@@ -120,7 +120,11 @@ public class PlayerController : MonoBehaviour
             Vector3 lookAtPoint = camRay.GetPoint(rayLenght);
             lookAtPoint.y = transform.position.y;
             transform.LookAt(lookAtPoint);
-            gunTip.transform.LookAt(lookAtPoint + new Vector3(0,1,0));
+            if (Vector3.Distance(transform.position, lookAtPoint) > 2)
+            {
+                gunTip.transform.LookAt(lookAtPoint + new Vector3(0, 1, 0));
+            }
+            
         }
     }
 

@@ -1347,10 +1347,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bullet: {fileID: 1511207710127842626, guid: 834154a7e7411954a96e762955da048d, type: 3}
   muzzelPoint: {fileID: 94180303172122206}
-  bulletSpeed: 10
-  damage: 2
   clipSize: 10
-  range: 2
   fireRate: 0.6
   reloadSpeed: 1
   defultSpred: 5
