@@ -107,6 +107,12 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         Rotate();
+        if (health <= 0 && transform.position.y > 0)
+        {
+            transform.position = new Vector3(0, -3, 0);
+            gun.GetUI().SetActive(false);
+            gun.enabled = false;
+        }
     }
 
     private void Rotate()
@@ -193,13 +199,6 @@ public class PlayerController : MonoBehaviour
         else
         {
             health -= dmg;
-        }
-
-        if (health <= 0)
-        {
-            transform.position = new Vector3(0,-3, 0);
-            gun.GetUI().SetActive(false);
-            gun.enabled = false;
         }
     }
 
