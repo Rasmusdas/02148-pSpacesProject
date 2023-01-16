@@ -218,7 +218,7 @@ public class NetworkServer
     /// <exception cref="ArgumentException"></exception>
     public static void Destroy(int id)
     {
-        if (!networkObjects.ContainsKey(id)) throw new ArgumentException("Object does not exist on network");
+        if (!networkObjects.ContainsKey(id)) { Debug.LogError("Object doesnt exist on the network"); return; }
 
         _serverSpace.Put(playerId,PacketType.Destroy.ToString(), id.ToString());
     }
