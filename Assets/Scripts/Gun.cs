@@ -13,10 +13,7 @@ public class Gun : MonoBehaviour
     public Transform muzzelPoint;
 
     [Header("Gun Stats")]
-    public float bulletSpeed = 10f;
-    public float damage = 2f;
     public int clipSize = 10;
-    public float range = 2f;
     public float fireRate = .6f;
     public float reloadSpeed = 1f;
     public float defultSpred = 5f;
