@@ -52,7 +52,7 @@ MonoBehaviour:
   bulletSpeed: 20
   damage: 2
   isExplosive: 1
-  explosiveRange: 2
+  explosiveRange: 3
   hitVFX: {fileID: 1249286875352315261, guid: ac42314d6f729bb4db4bb3e53790cb9e, type: 3}
   bloodVFX: {fileID: 3361717812988189515, guid: 48feefeda99eac54fa4f678f53461484, type: 3}
 --- !u!54 &4409634126810823542
