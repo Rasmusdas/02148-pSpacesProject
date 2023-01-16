@@ -5,21 +5,18 @@ using UnityEngine.SceneManagement;
 
 public class NetworkServerUI : MonoBehaviour
 {
-    public bool inServer;
+    public static bool inServer;
 
-    string joinIP = "82.211.223.108";
-    string createIP = "0.0.0.0";
+    static string joinIP = "82.211.223.108";
+    static string createIP = "0.0.0.0";
 
-    string joinPort = "5555";
-    string createPort = "5555";
+    static string joinPort = "5555";
+    static string createPort = "5555";
 
     bool ready;
 
     private void OnGUI()
     {
-        
-
-
         if (!inServer)
         {
             createIP = GUI.TextField(new Rect(160, 5, 100, 25), createIP);
@@ -53,6 +50,29 @@ public class NetworkServerUI : MonoBehaviour
                     ready = true;
                 }
                 height += 30;
+            }
+            else
+            {
+                var players = GameObject.FindGameObjectsWithTag("Player");
+                int count = 0;
+                foreach(var v in players)
+                {
+                    if(v.TryGetComponent(out PlayerController con))
+                    {
+                        if(con.health <= 0) count++;
+                    }
+                }
+
+                Debug.Log(players.Length);
+
+                if(count == players.Length-1)
+                {
+                    if (GUI.Button(new Rect(5, height, 150, 25), "Restart"))
+                    {
+                        NetworkServer.RestartGame();
+                    }
+                    height += 30;
+                }
             }
 
             if (GUI.Button(new Rect(5, height, 150, 25), "Leave"))

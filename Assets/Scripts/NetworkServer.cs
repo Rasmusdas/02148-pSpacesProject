@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class NetworkServer
 {
@@ -38,8 +39,9 @@ public class NetworkServer
     public static bool masterClient = false;
 
     const bool VERBOSE = true;
-
     private static System.Random random = new System.Random();
+    private static int _restartCount;
+    private static bool _restart;
     #endregion
 
     #region Server Setup
@@ -60,6 +62,23 @@ public class NetworkServer
         _updates = new();
         _playerSpawnCount = 0;
         _currentId = 0;
+        _ready = false;
+        _restartCount = 0;
+        LoadResources();
+    }
+
+    private static void Restart()
+    {
+        _readyCount = 0;
+        _idToObjectType = new();
+        _networkObjectOwners = new();
+        networkObjects = new();
+        _updates = new();
+        _playerSpawnCount = 0;
+        _currentId = 0;
+        _ready = false;
+        _restart = false;
+        _restartCount = 0;
     }
 
     /// <summary>
@@ -102,8 +121,6 @@ public class NetworkServer
 
         clientThread.Start();
 
-        LoadResources();
-
         GBHelper.Start(HandleGameUpdates());
 
         
@@ -142,7 +159,6 @@ public class NetworkServer
 
         if (VERBOSE) Debug.Log("Connected to private space " + string.Format("{0}://{1}:{2}/{3}?{4}", info.protocol, info.ip, info.port, playerId, info.connectionType));
 
-        LoadResources();
 
         Thread clientThread = new Thread(new ThreadStart(() => HandleClientUpdates()));
 
@@ -219,6 +235,16 @@ public class NetworkServer
         _serverSpace.Put(playerId, "Ready", "");
     }
 
+
+    public static void RestartGame()
+    {
+        if (_restart) return;
+
+        _restart = true;
+
+        _serverSpace.Put(playerId, "Restart", "");
+    }
+
     /// <summary>
     /// Updates the position of the object with the given id with the provided position and rotation on other clients.
     /// </summary>
@@ -290,9 +316,22 @@ public class NetworkServer
                     case "Destroy":
                         HandleClientDestroy(data);
                         break;
+                    case "Restart":
+                        HandleClientRestart();
+                        break;
                 }
             }
         }
+    }
+
+    private static void HandleClientRestart()
+    {
+        _ownSpace.GetAll(typeof(string), typeof(string));
+        _updates.Enqueue(() =>
+        {
+            Restart();
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        });
     }
 
     private static void HandleClientDestroy(string data)
@@ -397,8 +436,27 @@ public class NetworkServer
                     case "Ready":
                         HandleServerReady();
                         break;
+                    case "Restart":
+                        HandleServerRestart();
+                        break;
                 }
             }
+        }
+    }
+
+    private static void HandleServerRestart()
+    {
+        _restartCount++;
+        Debug.Log(_restartCount);
+        Debug.Log(_playerJoinCount);
+        if (_restartCount >= _playerJoinCount)
+        {
+            Debug.Log("Restarting Server");
+            foreach(var v in _playerSpaces)
+            {
+                v.Value.Put(PacketType.Restart.ToString(),"");
+            }
+            _serverSpace.GetAll(typeof(string), typeof(string), typeof(string));
         }
     }
 
@@ -554,5 +612,6 @@ public enum PacketType
     Instantiate,
     Health,
     Ready,
-    Destroy
+    Destroy,
+    Restart
 }
