@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SpeedBooster : MonoBehaviour
 {
-    public float speed = 0.5f;
+    public float speed = 1f;
 
     // Update is called once per frame
     void Update()
