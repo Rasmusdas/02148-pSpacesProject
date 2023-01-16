@@ -35,7 +35,7 @@ public class EndGameUI : MonoBehaviour
             }
             else
             {
-                lose.SetActive(false);
+                lose.SetActive(true);
             }
         }
     }
