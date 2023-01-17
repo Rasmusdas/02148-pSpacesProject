@@ -361,8 +361,11 @@ public class NetworkServer
         _updates.Enqueue(() =>
         {
             int id = int.Parse(splitData[0]);
-            int health = int.Parse(splitData[1]);
-            networkObjects[id].GetComponent<PlayerController>().UpdateHealth(health);
+            int health = int.Parse(splitData[1]); 
+            if (networkObjects.ContainsKey(id))
+            {
+                networkObjects[id].GetComponent<PlayerController>().UpdateHealth(health);
+            }
         });
     }
 
@@ -376,8 +379,11 @@ public class NetworkServer
         _updates.Enqueue(() =>
         {
             int id = int.Parse(splitData[0]);
-            networkObjects[id].UpdatePosition(position);
-            networkObjects[id].UpdateRotation(rotation);
+            if(networkObjects.ContainsKey(id))
+            {
+                networkObjects[id].UpdatePosition(position);
+                networkObjects[id].UpdateRotation(rotation);
+            }
         });
     }
 
