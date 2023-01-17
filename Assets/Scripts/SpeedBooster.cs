@@ -19,6 +19,7 @@ public class SpeedBooster : MonoBehaviour
             if (other.gameObject.GetComponent<NetworkTransform>().isOwner)
             {
                 other.gameObject.GetComponent<PlayerController>().moveSpeed += speed;
+                NetworkServer.Instantiate("PUSpawner", transform.position, Quaternion.identity);
             }
             gameObject.GetComponent<NetworkTransform>().Destroy();
         }

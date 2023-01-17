@@ -21,6 +21,10 @@ public class Shield : MonoBehaviour
         if (other.tag == "Player")
         {
             other.gameObject.GetComponent<PlayerController>().Shield(3);
+            if(other.GetComponent<NetworkTransform>().isOwner)
+            {
+                NetworkServer.Instantiate("PUSpawner", transform.position, Quaternion.identity);
+            }
             Destroy(gameObject);
         }
     }

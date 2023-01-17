@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PUSpawnPoint : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
         StartCoroutine(Spawner());
@@ -41,16 +40,12 @@ public class PUSpawnPoint : MonoBehaviour
                     NetworkServer.Instantiate("SpeedBooster", transform.position+new Vector3(0, 0.5f, 0), Quaternion.Euler(90, 0, 0));
                     live = true;
                 }
-            }
-        }
-    }
 
-    private void OnTriggerStay(Collider other)
-    {
-        if (other.tag == "Player" && live && NetworkServer.masterClient)
-        {
-            live = false;
-            StartCoroutine(Spawner());
+                if(r <=40)
+                {
+                    Destroy(gameObject);
+                }
+            }
         }
     }
 }

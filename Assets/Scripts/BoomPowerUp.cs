@@ -28,6 +28,7 @@ public class BoomPowerUp : MonoBehaviour
                 Gun gun = other.GetComponentInChildren<Gun>();
                 gun.bullet = bullet;
                 gun.SetFullAmmo();
+                NetworkServer.Instantiate("PUSpawner", transform.position, Quaternion.identity);
             }
             nt.Destroy();
         }

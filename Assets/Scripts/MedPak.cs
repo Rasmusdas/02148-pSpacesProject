@@ -18,9 +18,11 @@ public class MedPak : MonoBehaviour
         {
             if (other.gameObject.GetComponent<NetworkTransform>().isOwner)
             {
+                NetworkServer.Instantiate("PUSpawner", transform.position, Quaternion.identity);
                 other.gameObject.GetComponent<PlayerController>().AddHealth(health);
             }
             gameObject.GetComponent<NetworkTransform>().Destroy();
+            
             Debug.Log(other.name);
         }
     }

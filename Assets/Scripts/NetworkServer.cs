@@ -513,8 +513,8 @@ public class NetworkServer
         if (((string)tuple[2]).Contains("Player"))
         {
             _networkObjectOwners.Add(_currentId, (string)tuple[0]);
-            _idToObjectType.Add(_currentId, "NewPlayer");
-            BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + "NewPlayer" + "|" + NetworkPackager.Package(_startPos[_playerSpawnCount]) + "|" + NetworkPackager.Package(Quaternion.identity)));
+            _idToObjectType.Add(_currentId, "Player");
+            BroadcastPacket(new Packet(PacketType.Instantiate, "All", "Server", _currentId++ + "|" + (string)tuple[0] + "|" + "Player" + "|" + NetworkPackager.Package(_startPos[_playerSpawnCount]) + "|" + NetworkPackager.Package(Quaternion.identity)));
             _playerSpawnCount = (_playerSpawnCount + 1) % 4;
         }
         else
