@@ -1316,7 +1316,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 746719bcd19e19a46b7ba8acb7248c80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bullet: {fileID: 0}
   gunTip: {fileID: 94180303172122206}
   health: 10
   maxHealth: 10
@@ -1326,9 +1325,8 @@ MonoBehaviour:
   shielded: 0
   fireratePistol: 0.5
   sprintKey: 304
-  muzzleflashVFX: {fileID: 6887707155540854618}
   death: {fileID: 7225640929412136960, guid: fb6d6c588a73c4640bb5534878b7fd4e, type: 3}
-  shieldMat: {fileID: 0}
+  shieldMat: {fileID: 2100000, guid: 7318f289bc2453b4d8975fe483fb74c8, type: 2}
   privateHealthBar: {fileID: 5759148494317088937}
   publicHealthBar: {fileID: 2293855991614979457}
   hitSound: {fileID: 4974649223564911111}
@@ -1347,10 +1345,10 @@ MonoBehaviour:
   bullet: {fileID: 1511207710127842626, guid: 834154a7e7411954a96e762955da048d, type: 3}
   muzzelPoint: {fileID: 94180303172122206}
   clipSize: 10
-  fireRate: 0.6
-  reloadSpeed: 1
+  fireRate: 0.5
+  reloadSpeed: 1.2
   defultSpred: 5
-  autoFire: 0
+  autoFire: 1
   bulletsAtOnes: 1
   muzzleFlash: {fileID: 6887707155540854618}
   ammoText: {fileID: 2732759991340384549}

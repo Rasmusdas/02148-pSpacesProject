@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
     [Header("GameObjects")]
-    public GameObject bullet;
     public Transform gunTip;
 
     [Header("Stats")]
@@ -21,10 +20,8 @@ public class PlayerController : MonoBehaviour
 
     [Header("KeyBinds")]
     public KeyCode sprintKey = KeyCode.LeftShift;
-    //public KeyCode fireKey = KeyCode.Mouse0;
 
     [Header("VFXs")]
-    public ParticleSystem muzzleflashVFX;
     public GameObject death;
     public Material shieldMat;
     public Image privateHealthBar;
@@ -33,14 +30,15 @@ public class PlayerController : MonoBehaviour
     [Header("Sound")]
     public AudioSource hitSound;
     
-    Material playerMat;
-    MeshRenderer meshRenderer;
+    //Material playerMat;
+    Material playerMat2;
+    //MeshRenderer meshRenderer;
+    SkinnedMeshRenderer skinnedMeshRenderer;
 
     NetworkTransform nT;
 
     bool isSprinting = false;
     bool canShoot = true;
-    //private AudioSource gunShot;
 
     Vector3 movement;
 
@@ -55,8 +53,10 @@ public class PlayerController : MonoBehaviour
     {
         nT = GetComponent<NetworkTransform>();
         gun = GetComponent<Gun>();
-        meshRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
-        playerMat = meshRenderer.material;
+        //meshRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
+        skinnedMeshRenderer = gameObject.GetComponentInChildren<SkinnedMeshRenderer>();
+        //playerMat = meshRenderer.material;
+        playerMat2 = skinnedMeshRenderer.material;
         TryGetComponent<Animator>(out anim);
         if (!nT.isOwner) return;
         characterController = GetComponent<CharacterController>();
@@ -71,8 +71,6 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //playerMat.color = Color.Lerp(Color.red, Color.green, health / maxHealth);
-
         privateHealthBar.fillAmount = health / maxHealth;
         publicHealthBar.fillAmount = health / maxHealth;
 
@@ -81,28 +79,8 @@ public class PlayerController : MonoBehaviour
         moveSpeed = Mathf.Min(maxSpeed, moveSpeed);
         Move();
 
-        //if (Input.GetKeyDown(fireKey) && health > 0)
-        //{
-        //    Shoot();
-        //}
     }
 
-    //private void OnParticleCollision(GameObject other)
-    //{
-    //    Debug.Log(health);
-    //    TakeDamge(1);
-    //}
-
-    private void Shoot()
-    {
-        if (canShoot)
-        {
-            muzzleflashVFX.Play();
-            //gunShot.Play();
-            NetworkServer.Instantiate("Bullet", gunTip.position, gunTip.rotation);
-            StartCoroutine(Firerate(fireratePistol));
-        }
-    }
 
     private void FixedUpdate()
     {
@@ -221,20 +199,15 @@ public class PlayerController : MonoBehaviour
     IEnumerator ShieldWaiter(float time)
     {
         shielded++;
-        meshRenderer.material = shieldMat;
+        //meshRenderer.material = shieldMat;
+        skinnedMeshRenderer.material = shieldMat;
         yield return new WaitForSeconds(time);
         shielded--;
         if (shielded == 0)
         {
-            meshRenderer.material = playerMat;
+           // meshRenderer.material = playerMat;
+            skinnedMeshRenderer.material = playerMat2;
         }
-    }
-
-    IEnumerator Firerate(float firerate)
-    {
-        canShoot = false;
-        yield return new WaitForSeconds(firerate);
-        canShoot = true;
     }
 
 }
