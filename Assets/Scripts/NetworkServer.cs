@@ -38,7 +38,7 @@ public class NetworkServer
     public static string playerId;
     public static bool masterClient = false;
 
-    const bool VERBOSE = true;
+    const bool VERBOSE = false;
     private static System.Random random = new System.Random();
     private static int _restartCount;
     private static bool _restart;
@@ -458,8 +458,7 @@ public class NetworkServer
     private static void HandleServerRestart()
     {
         _restartCount++;
-        Debug.Log(_restartCount);
-        Debug.Log(_playerJoinCount);
+        
         if (_restartCount >= _playerJoinCount)
         {
             Debug.Log("Restarting Server");
@@ -503,6 +502,7 @@ public class NetworkServer
         {
             foreach (var playerId in _playerIds)
             {
+                Debug.Log("Spawning Player: " + playerId);
                 _serverSpace.Put(playerId, "Instantiate", "Player");
             }
         }
