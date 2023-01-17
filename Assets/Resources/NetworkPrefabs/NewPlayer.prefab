@@ -1347,10 +1347,10 @@ MonoBehaviour:
   bullet: {fileID: 1511207710127842626, guid: 834154a7e7411954a96e762955da048d, type: 3}
   muzzelPoint: {fileID: 94180303172122206}
   clipSize: 10
-  fireRate: 0.6
-  reloadSpeed: 1
+  fireRate: 0.5
+  reloadSpeed: 1.2
   defultSpred: 5
-  autoFire: 0
+  autoFire: 1
   bulletsAtOnes: 1
   muzzleFlash: {fileID: 6887707155540854618}
   ammoText: {fileID: 2732759991340384549}
