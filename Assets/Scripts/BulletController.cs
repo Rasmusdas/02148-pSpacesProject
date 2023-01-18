@@ -112,7 +112,6 @@ public class BulletController : MonoBehaviour
                 ParticleSystem ps = obj.GetComponent<ParticleSystem>();
                 ps.startColor = Color.blue;
                 ps.startLifetime /= 2;
-                Debug.Log(collision.gameObject);
                 Destroy(gameObject);
             }
         }

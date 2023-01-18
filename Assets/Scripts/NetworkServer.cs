@@ -33,6 +33,7 @@ public class NetworkServer
     private static int _playerJoinCount;
     private static int _maxPlayerCount = 4;
     private static bool _ready;
+    private static bool _inGame;
 
     public static bool running;
     public static string playerId;
@@ -67,6 +68,9 @@ public class NetworkServer
         LoadResources();
     }
 
+    /// <summary>
+    /// Restarts the server state to the state after players have joined.
+    /// </summary>
     private static void Restart()
     {
         _readyCount = 0;
@@ -79,6 +83,7 @@ public class NetworkServer
         _ready = false;
         _restart = false;
         _restartCount = 0;
+        _inGame = false;
     }
 
     /// <summary>
@@ -235,7 +240,9 @@ public class NetworkServer
         _serverSpace.Put(playerId, "Ready", "");
     }
 
-
+    /// <summary>
+    /// Sends a restart game signal to the server to mark ready for restart.
+    /// </summary>
     public static void RestartGame()
     {
         if (_restart) return;
@@ -451,9 +458,11 @@ public class NetworkServer
                         BroadcastPacket(new Packet(PacketType.Health, "All", "Server", ((string)tuple[2]).Replace(".", ",")));
                         break;
                     case "Ready":
+                        Debug.Log("Player: " + (string)tuple[0] + " is ready!");
                         HandleServerReady();
                         break;
                     case "Restart":
+                        Debug.Log("Player: " + (string)tuple[0] + " wants to restart");
                         HandleServerRestart();
                         break;
                 }
@@ -467,7 +476,6 @@ public class NetworkServer
         
         if (_restartCount >= _playerJoinCount)
         {
-            Debug.Log("Restarting Server");
             foreach(var v in _playerSpaces)
             {
                 v.Value.Put(PacketType.Restart.ToString(),"");
@@ -510,6 +518,7 @@ public class NetworkServer
             {
                 Debug.Log("Spawning Player: " + playerId);
                 _serverSpace.Put(playerId, "Instantiate", "Player");
+                _inGame = true;
             }
         }
     }
@@ -542,7 +551,14 @@ public class NetworkServer
         if (_playerJoinCount >= _maxPlayerCount)
         {
             _serverSpace.Put((string)tuple[2], "Join", 0);
-            Debug.Log("Player " + tuple[2] + " was denied because server is too full");
+            Debug.Log("Player " + tuple[2] + " was denied because server is too full.");
+            return;
+        }
+
+        if(_inGame)
+        {
+            _serverSpace.Put((string)tuple[2], "Join", 0);
+            Debug.Log("Player " + tuple[2] + " was denied because the game is started.");
             return;
         }
 

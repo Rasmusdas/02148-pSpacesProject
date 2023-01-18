@@ -34,8 +34,8 @@ namespace dotSpace.Objects.Network.Gates
         public TcpGate(IEncoder encoder, ConnectionString connectionstring) : base(encoder, connectionstring)
         {
             this.backlog = 50;
-            this.ipAddress = IPAddress.Any;
-            this.listener = new TcpListener(IPAddress.Any, this.ConnectionString.Port);
+            this.ipAddress = IPAddress.Parse(connectionstring.Host);
+            this.listener = new TcpListener(ipAddress, this.ConnectionString.Port);
         }
 
         #endregion

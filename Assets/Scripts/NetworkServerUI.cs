@@ -7,7 +7,7 @@ public class NetworkServerUI : MonoBehaviour
 {
     public static bool inServer;
 
-    static string joinIP = "82.211.223.108";
+    static string joinIP = "127.0.0.1";
     static string createIP = "0.0.0.0";
 
     static string joinPort = "5555";
@@ -62,8 +62,6 @@ public class NetworkServerUI : MonoBehaviour
                         if(con.health <= 0) count++;
                     }
                 }
-
-                Debug.Log(players.Length);
 
                 if(count >= players.Length-1)
                 {
